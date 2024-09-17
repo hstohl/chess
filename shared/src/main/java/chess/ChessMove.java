@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -8,31 +10,62 @@ package chess;
  */
 public class ChessMove {
 
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece) {
-    }
+  private final ChessPosition startPosition;
+  private final ChessPosition endPosition;
+  private final ChessPiece.PieceType promotionPiece;
 
-    /**
-     * @return ChessPosition of starting location
-     */
-    public ChessPosition getStartPosition() {
-        throw new RuntimeException("Not implemented");
-    }
+  public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                   ChessPiece.PieceType promotionPiece) {
+    this.startPosition=startPosition;
+    this.endPosition=endPosition;
+    this.promotionPiece=promotionPiece;
+  }
 
-    /**
-     * @return ChessPosition of ending location
-     */
-    public ChessPosition getEndPosition() {
-        throw new RuntimeException("Not implemented");
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ChessMove chessMove=(ChessMove) o;
+    return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+  }
 
-    /**
-     * Gets the type of piece to promote a pawn to if pawn promotion is part of this
-     * chess move
-     *
-     * @return Type of piece to promote a pawn to, or null if no promotion
-     */
-    public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(startPosition, endPosition, promotionPiece);
+  }
+
+  @Override
+  public String toString() {
+    return "ChessMove{" +
+            "startPosition=" + startPosition +
+            ", endPosition=" + endPosition +
+            ", promotionPiece=" + promotionPiece +
+            '}' + '\n';
+  }
+
+  /**
+   * @return ChessPosition of starting location
+   */
+  public ChessPosition getStartPosition() {
+    return startPosition;
+  }
+
+  /**
+   * @return ChessPosition of ending location
+   */
+  public ChessPosition getEndPosition() {
+    return endPosition;
+  }
+
+  /**
+   * Gets the type of piece to promote a pawn to if pawn promotion is part of this
+   * chess move
+   *
+   * @return Type of piece to promote a pawn to, or null if no promotion
+   */
+  public ChessPiece.PieceType getPromotionPiece() {
+    return promotionPiece;
+  }
 }
+
+

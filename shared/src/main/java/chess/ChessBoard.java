@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-  private static ChessPiece[][] squares=new ChessPiece[8][8];
+  private static ChessPiece[][] squares=new ChessPiece[9][9];
 
   public ChessBoard() {
 

@@ -79,22 +79,22 @@ public class ChessPiece {
   public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
     //return PieceMovesCalculator.pieceMoves(board, myPosition);
     ArrayList<ChessMove> moves = new ArrayList<>();
-    if (type == PieceType.KING) {
+    if (type == PieceType.KING) { //Done
       PieceMovesCalculator forKing = new KingMovesCalculator();
       moves = forKing.pieceMoves(board, myPosition);
-    } else if (type == PieceType.QUEEN) {
+    } else if (type == PieceType.QUEEN) { //TODO
       PieceMovesCalculator forQueen = new QueenMovesCalculator();
       moves = forQueen.pieceMoves(board, myPosition);
-    } else if (type == PieceType.BISHOP) {
+    } else if (type == PieceType.BISHOP) { //DONE
       PieceMovesCalculator forBishop = new BishopMovesCalculator();
       moves = forBishop.pieceMoves(board, myPosition);
-    } else if (type == PieceType.KNIGHT) {
+    } else if (type == PieceType.KNIGHT) { //DONE
       PieceMovesCalculator forKnight = new KnightMovesCalculator();
       moves = forKnight.pieceMoves(board, myPosition);
-    } else if (type == PieceType.ROOK) {
+    } else if (type == PieceType.ROOK) { //DONE
       PieceMovesCalculator forRook = new RookMovesCalculator();
       moves = forRook.pieceMoves(board, myPosition);
-    } else if (type == PieceType.PAWN) {
+    } else if (type == PieceType.PAWN) { //TODO
       PieceMovesCalculator forPawn = new PawnMovesCalculator();
       moves = forPawn.pieceMoves(board, myPosition);
     }

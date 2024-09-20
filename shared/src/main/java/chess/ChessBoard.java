@@ -3,6 +3,10 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -10,7 +14,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-  private static ChessPiece[][] squares=new ChessPiece[9][9];
+  private static ChessPiece[][] squares = new ChessPiece[9][9];
 
   public ChessBoard() {
 
@@ -20,7 +24,7 @@ public class ChessBoard {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ChessBoard that=(ChessBoard) o;
+    ChessBoard that = (ChessBoard) o;
     return Objects.deepEquals(squares, that.squares);
   }
 
@@ -43,7 +47,7 @@ public class ChessBoard {
    * @param piece    the piece to add
    */
   public void addPiece(ChessPosition position, ChessPiece piece) {
-    squares[position.getRow()][position.getColumn()]=piece;
+    squares[position.getRow()][position.getColumn()] = piece;
   }
 
   /**
@@ -62,6 +66,49 @@ public class ChessBoard {
    * (How the game of chess normally starts)
    */
   public void resetBoard() {
-    throw new RuntimeException("Not implemented");
+    ChessPiece wPawn = new ChessPiece(WHITE, PAWN);
+    ChessPiece wRook = new ChessPiece(WHITE, ROOK);
+    ChessPiece wRook2 = new ChessPiece(WHITE, ROOK);
+    ChessPiece wKnight = new ChessPiece(WHITE, KNIGHT);
+    ChessPiece wKnight2 = new ChessPiece(WHITE, KNIGHT);
+    ChessPiece wBishop = new ChessPiece(WHITE, BISHOP);
+    ChessPiece wBishop2 = new ChessPiece(WHITE, BISHOP);
+    ChessPiece wQueen = new ChessPiece(WHITE, QUEEN);
+    ChessPiece wKing = new ChessPiece(WHITE, KING);
+
+    for (int i = 1; i < 9; i++) {
+      addPiece(new ChessPosition(2, i), wPawn);
+    }
+    addPiece(new ChessPosition(1, 1), wRook);
+    addPiece(new ChessPosition(1, 8), wRook);
+    addPiece(new ChessPosition(1, 2), wKnight);
+    addPiece(new ChessPosition(1, 7), wKnight);
+    addPiece(new ChessPosition(1, 3), wBishop);
+    addPiece(new ChessPosition(1, 6), wBishop);
+    addPiece(new ChessPosition(1, 4), wQueen);
+    addPiece(new ChessPosition(1, 5), wKing);
+
+    ChessPiece bPawn = new ChessPiece(BLACK, PAWN);
+    ChessPiece bRook = new ChessPiece(BLACK, ROOK);
+    ChessPiece bRook2 = new ChessPiece(BLACK, ROOK);
+    ChessPiece bKnight = new ChessPiece(BLACK, KNIGHT);
+    ChessPiece bKnight2 = new ChessPiece(BLACK, KNIGHT);
+    ChessPiece bBishop = new ChessPiece(BLACK, BISHOP);
+    ChessPiece bBishop2 = new ChessPiece(BLACK, BISHOP);
+    ChessPiece bQueen = new ChessPiece(BLACK, QUEEN);
+    ChessPiece bKing = new ChessPiece(BLACK, KING);
+
+    for (int i = 1; i < 9; i++) {
+      addPiece(new ChessPosition(7, i), bPawn);
+    }
+    addPiece(new ChessPosition(8, 1), bRook);
+    addPiece(new ChessPosition(8, 8), bRook);
+    addPiece(new ChessPosition(8, 2), bKnight);
+    addPiece(new ChessPosition(8, 7), bKnight);
+    addPiece(new ChessPosition(8, 3), bBishop);
+    addPiece(new ChessPosition(8, 6), bBishop);
+    addPiece(new ChessPosition(8, 4), bQueen);
+    addPiece(new ChessPosition(8, 5), bKing);
+
   }
 }

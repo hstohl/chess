@@ -27,6 +27,9 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
   public void legalMoveCheckerDiagonal(ArrayList<ChessMove> moves, ChessPosition newPos, ChessBoard board, ChessPosition myPosition) {
     ChessMove move;
+    if (newPos.getColumn() > 8 || newPos.getColumn() <= 0) {
+      return;
+    }
     if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
       if (newPos.getRow() != 8 && newPos.getRow() != 1) {
         move = new ChessMove(myPosition, newPos, null);

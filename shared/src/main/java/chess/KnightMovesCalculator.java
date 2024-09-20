@@ -16,11 +16,9 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
           if (board.getPiece(newPos) == null) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
-            System.out.println("Moved into empty space1");
           } else if (board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
-            System.out.println("Moved to capture piece1");
           }
         }
       }
@@ -32,17 +30,14 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
           if (board.getPiece(newPos) == null) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
-            System.out.println("Moved into empty space2");
           } else if (board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
-            System.out.println("Moved to capture piece2");
           }
         }
       }
     }
 
-    System.out.println("End test. \n");
     return moves;
   }
 }

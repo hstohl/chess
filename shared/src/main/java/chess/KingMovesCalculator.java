@@ -12,10 +12,10 @@ public class KingMovesCalculator implements PieceMovesCalculator {
       for (int j = -1; j <= 1; j++) {
         if (myPosition.getRow() + i <= 8 && myPosition.getRow() + i > 0 && myPosition.getColumn() + j <= 8 && myPosition.getColumn() + j > 0) {
           newPos = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + j);
-          if (ChessBoard.getPiece(newPos) == null) {
+          if (board.getPiece(newPos) == null) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
-          } else if (ChessBoard.getPiece(newPos).getTeamColor() != ChessBoard.getPiece(myPosition).getTeamColor()) {
+          } else if (board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
             move = new ChessMove(myPosition, newPos, null);
             moves.add(move);
           }

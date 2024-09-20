@@ -16,10 +16,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
       ChessMove move;
       if (upRight && myPosition.getRow() + i <= 8 && myPosition.getColumn() + i <= 8) {
         newPos = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
-        if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() == ChessBoard.getPiece(myPosition).getTeamColor()) {
+        if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
           upRight = false;
           continue;
-        } else if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() != ChessBoard.getPiece(myPosition).getTeamColor()) {
+        } else if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
           move = new ChessMove(myPosition, newPos, null);
           moves.add(move);
           upRight = false;
@@ -34,10 +34,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
 
       if (downRight && myPosition.getRow() - i > 0 && myPosition.getColumn() + i <= 8) {
         newPos = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i);
-        if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() == ChessBoard.getPiece(myPosition).getTeamColor()) {
+        if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
           downRight = false;
           continue;
-        } else if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() != ChessBoard.getPiece(myPosition).getTeamColor()) {
+        } else if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
           move = new ChessMove(myPosition, newPos, null);
           moves.add(move);
           downRight = false;
@@ -52,10 +52,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
 
       if (upLeft && myPosition.getRow() + i <= 8 && myPosition.getColumn() - i > 0) {
         newPos = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i);
-        if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() == ChessBoard.getPiece(myPosition).getTeamColor()) {
+        if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
           upLeft = false;
           continue;
-        } else if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() != ChessBoard.getPiece(myPosition).getTeamColor()) {
+        } else if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
           move = new ChessMove(myPosition, newPos, null);
           moves.add(move);
           upLeft = false;
@@ -70,10 +70,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
 
       if (downLeft && myPosition.getRow() - i > 0 && myPosition.getColumn() - i > 0) {
         newPos = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i);
-        if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() == ChessBoard.getPiece(myPosition).getTeamColor()) {
+        if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
           downLeft = false;
           continue;
-        } else if (ChessBoard.getPiece(newPos) != null && ChessBoard.getPiece(newPos).getTeamColor() != ChessBoard.getPiece(myPosition).getTeamColor()) {
+        } else if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
           move = new ChessMove(myPosition, newPos, null);
           moves.add(move);
           downLeft = false;

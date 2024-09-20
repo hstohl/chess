@@ -82,15 +82,22 @@ public class ChessPiece {
     if (type == PieceType.KING) {
       PieceMovesCalculator forKing = new KingMovesCalculator();
       moves = forKing.pieceMoves(board, myPosition);
-    } else if (type == ChessPiece.PieceType.BISHOP) {
+    } else if (type == PieceType.QUEEN) {
+      PieceMovesCalculator forQueen = new QueenMovesCalculator();
+      moves = forQueen.pieceMoves(board, myPosition);
+    } else if (type == PieceType.BISHOP) {
       PieceMovesCalculator forBishop = new BishopMovesCalculator();
       moves = forBishop.pieceMoves(board, myPosition);
-    } else if (type == ChessPiece.PieceType.KNIGHT) {
+    } else if (type == PieceType.KNIGHT) {
       PieceMovesCalculator forKnight = new KnightMovesCalculator();
       moves = forKnight.pieceMoves(board, myPosition);
-    } /*else if (type == ChessPiece.PieceType.ROOK) {
-
-    }*/
+    } else if (type == PieceType.ROOK) {
+      PieceMovesCalculator forRook = new RookMovesCalculator();
+      moves = forRook.pieceMoves(board, myPosition);
+    } else if (type == PieceType.PAWN) {
+      PieceMovesCalculator forPawn = new PawnMovesCalculator();
+      moves = forPawn.pieceMoves(board, myPosition);
+    }
 
     return moves;
   }

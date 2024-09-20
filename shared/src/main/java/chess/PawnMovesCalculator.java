@@ -9,7 +9,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
   public void legalMoveCheckerForward(ArrayList<ChessMove> moves, ChessPosition newPos, ChessBoard board, ChessPosition myPosition) {
     ChessMove move;
     if (board.getPiece(newPos) == null) {
-      if (newPos.getRow() != 8 || newPos.getColumn() != 1) {
+      if (newPos.getRow() != 8 && newPos.getRow() != 1) {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
@@ -28,7 +28,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
   public void legalMoveCheckerDiagonal(ArrayList<ChessMove> moves, ChessPosition newPos, ChessBoard board, ChessPosition myPosition) {
     ChessMove move;
     if (board.getPiece(newPos) != null && board.getPiece(newPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-      if (newPos.getRow() != 8 || newPos.getColumn() != 1) {
+      if (newPos.getRow() != 8 && newPos.getRow() != 1) {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
@@ -75,7 +75,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         legalMoveCheckerForward(moves, newPos, board, myPosition);
       }
     }
-
 
     return moves;
   }

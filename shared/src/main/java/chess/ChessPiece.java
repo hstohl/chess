@@ -79,11 +79,18 @@ public class ChessPiece {
   public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
     //return PieceMovesCalculator.pieceMoves(board, myPosition);
     ArrayList<ChessMove> moves = new ArrayList<>();
-    if (type == ChessPiece.PieceType.BISHOP) {
+    if (type == PieceType.KING) {
+      PieceMovesCalculator forKing = new KingMovesCalculator();
+      moves = forKing.pieceMoves(board, myPosition);
+    } else if (type == ChessPiece.PieceType.BISHOP) {
       PieceMovesCalculator forBishop = new BishopMovesCalculator();
       moves = forBishop.pieceMoves(board, myPosition);
+    } else if (type == ChessPiece.PieceType.KNIGHT) {
+      PieceMovesCalculator forKnight = new KnightMovesCalculator();
+      moves = forKnight.pieceMoves(board, myPosition);
+    } /*else if (type == ChessPiece.PieceType.ROOK) {
 
-    }
+    }*/
 
     return moves;
   }

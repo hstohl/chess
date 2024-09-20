@@ -82,7 +82,7 @@ public class ChessPiece {
     if (type == PieceType.KING) { //Done
       PieceMovesCalculator forKing = new KingMovesCalculator();
       moves = forKing.pieceMoves(board, myPosition);
-    } else if (type == PieceType.QUEEN) { //TODO
+    } else if (type == PieceType.QUEEN) { //DONE
       PieceMovesCalculator forQueen = new QueenMovesCalculator();
       moves = forQueen.pieceMoves(board, myPosition);
     } else if (type == PieceType.BISHOP) { //DONE

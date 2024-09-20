@@ -11,6 +11,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
     boolean upRight = true;
     boolean downRight = true;
     int i = 1;
+
     while (upLeft || downLeft || upRight || downRight) {
       ChessPosition newPos;
       ChessMove move;
@@ -28,7 +29,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
-        //System.out.println("upRightFalse: {" + (myPosition.getRow() + i) + "," + (myPosition.getColumn() + i) + "}");
         upRight = false;
       }
 
@@ -46,7 +46,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
-        //System.out.println("downLeftFalse: {" + (myPosition.getRow() - i) + "," + (myPosition.getColumn() + i) + "}");
         downRight = false;
       }
 
@@ -64,7 +63,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
-        //System.out.println("upLeftFalse: {" + (myPosition.getRow() + i) + "," + (myPosition.getColumn() - i) + "}");
         upLeft = false;
       }
 
@@ -82,7 +80,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
         move = new ChessMove(myPosition, newPos, null);
         moves.add(move);
       } else {
-        //System.out.println("downLeftFalse: {" + (myPosition.getRow() - i) + "," + (myPosition.getColumn() - i) + "}");
         downLeft = false;
       }
       ++i;

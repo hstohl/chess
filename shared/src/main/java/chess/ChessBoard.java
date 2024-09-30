@@ -72,17 +72,11 @@ public class ChessBoard {
   public void resetBoard() {
     ChessPiece wPawn = new ChessPiece(WHITE, PAWN);
     ChessPiece wRook = new ChessPiece(WHITE, ROOK);
-    ChessPiece wRook2 = new ChessPiece(WHITE, ROOK);
     ChessPiece wKnight = new ChessPiece(WHITE, KNIGHT);
-    ChessPiece wKnight2 = new ChessPiece(WHITE, KNIGHT);
     ChessPiece wBishop = new ChessPiece(WHITE, BISHOP);
-    ChessPiece wBishop2 = new ChessPiece(WHITE, BISHOP);
     ChessPiece wQueen = new ChessPiece(WHITE, QUEEN);
     ChessPiece wKing = new ChessPiece(WHITE, KING);
 
-    for (int i = 1; i < 9; i++) {
-      addPiece(new ChessPosition(2, i), wPawn);
-    }
     addPiece(new ChessPosition(1, 1), wRook);
     addPiece(new ChessPosition(1, 8), wRook);
     addPiece(new ChessPosition(1, 2), wKnight);
@@ -92,19 +86,15 @@ public class ChessBoard {
     addPiece(new ChessPosition(1, 4), wQueen);
     addPiece(new ChessPosition(1, 5), wKing);
 
+
     ChessPiece bPawn = new ChessPiece(BLACK, PAWN);
     ChessPiece bRook = new ChessPiece(BLACK, ROOK);
-    ChessPiece bRook2 = new ChessPiece(BLACK, ROOK);
     ChessPiece bKnight = new ChessPiece(BLACK, KNIGHT);
-    ChessPiece bKnight2 = new ChessPiece(BLACK, KNIGHT);
     ChessPiece bBishop = new ChessPiece(BLACK, BISHOP);
-    ChessPiece bBishop2 = new ChessPiece(BLACK, BISHOP);
     ChessPiece bQueen = new ChessPiece(BLACK, QUEEN);
     ChessPiece bKing = new ChessPiece(BLACK, KING);
 
-    for (int i = 1; i < 9; i++) {
-      addPiece(new ChessPosition(7, i), bPawn);
-    }
+
     addPiece(new ChessPosition(8, 1), bRook);
     addPiece(new ChessPosition(8, 8), bRook);
     addPiece(new ChessPosition(8, 2), bKnight);
@@ -113,6 +103,11 @@ public class ChessBoard {
     addPiece(new ChessPosition(8, 6), bBishop);
     addPiece(new ChessPosition(8, 4), bQueen);
     addPiece(new ChessPosition(8, 5), bKing);
+
+    for (int i = 1; i < 9; i++) {
+      addPiece(new ChessPosition(2, i), wPawn);
+      addPiece(new ChessPosition(7, i), bPawn);
+    }
 
   }
 }

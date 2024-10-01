@@ -98,15 +98,7 @@ public class ChessGame {
     return kingPos;
   }
 
-  /**
-   * Determines if the given team is in check
-   *
-   * @param teamColor which team to check for check
-   * @return True if the specified team is in check
-   */
-  public boolean isInCheck(TeamColor teamColor) {
-    ChessPosition kingPos = new ChessPosition(0, 0);
-    kingPos = KingFinder(teamColor);
+  public boolean wouldBeInCheck(TeamColor teamColor, ChessPosition kingPos) {
     ChessPosition enemyPos;
     for (int i = 1; i < 9; ++i) {
       for (int j = 1; j < 9; ++j) {
@@ -122,9 +114,19 @@ public class ChessGame {
         }
       }
     }
-
-
     return false;
+  }
+
+  /**
+   * Determines if the given team is in check
+   *
+   * @param teamColor which team to check for check
+   * @return True if the specified team is in check
+   */
+  public boolean isInCheck(TeamColor teamColor) {
+    ChessPosition kingPos;
+    kingPos = KingFinder(teamColor);
+    return wouldBeInCheck(teamColor, kingPos);
   }
 
   /**
@@ -134,7 +136,18 @@ public class ChessGame {
    * @return True if the specified team is in checkmate
    */
   public boolean isInCheckmate(TeamColor teamColor) {
-    throw new RuntimeException("Not implemented");
+    ChessPosition kingPos = KingFinder(teamColor);
+    if (!isInCheck(teamColor)) {
+      return false;
+    }
+    Collection<ChessMove> kingMoves = board.getPiece(kingPos).pieceMoves(board, kingPos);
+    for (ChessMove move : kingMoves) {
+      if (!wouldBeInCheck(teamColor, move.getEndPosition())) {
+        System.out.println(move);
+        return false;
+      }
+    }
+    return true;
   }
 
   /**

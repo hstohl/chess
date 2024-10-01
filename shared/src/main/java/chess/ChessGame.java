@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -89,7 +90,37 @@ public class ChessGame {
    * @return True if the specified team is in check
    */
   public boolean isInCheck(TeamColor teamColor) {
-    throw new RuntimeException("Not implemented");
+    ChessPosition kingPos = new ChessPosition(0, 0);
+    for (int i = 1; i < 9; ++i) {
+      for (int j = 1; j < 9; ++j) {
+        kingPos = new ChessPosition(i, j);
+        System.out.println("King pos: " + kingPos);
+        if (board.getPiece(kingPos) != null && board.getPiece(kingPos).getPieceType() == ChessPiece.PieceType.KING
+                && board.getPiece(kingPos).getTeamColor() == teamColor) {
+          System.out.println("Real King pos: " + kingPos);
+          break;
+        }
+      }
+    }
+    System.out.println("Second real King pos: " + kingPos);
+    ChessPosition enemyPos;
+    for (int i = 1; i < 9; ++i) {
+      for (int j = 1; j < 9; ++j) {
+        Collection<ChessMove> enemyMoves;
+        enemyPos = new ChessPosition(i, j);
+        if (board.getPiece(enemyPos) != null && board.getPiece(enemyPos).getTeamColor() != teamColor) {
+          enemyMoves = board.getPiece(enemyPos).pieceMoves(board, enemyPos);
+          for (ChessMove move : enemyMoves) {
+            if (move.getEndPosition() == kingPos) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+
+    return false;
   }
 
   /**

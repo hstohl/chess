@@ -83,6 +83,21 @@ public class ChessGame {
     }
   }
 
+
+  public ChessPosition KingFinder(TeamColor color) {
+    ChessPosition kingPos = new ChessPosition(0, 0);
+    for (int i = 1; i < 9; ++i) {
+      for (int j = 1; j < 9; ++j) {
+        kingPos = new ChessPosition(i, j);
+        if (board.getPiece(kingPos) != null && board.getPiece(kingPos).getPieceType() == ChessPiece.PieceType.KING
+                && board.getPiece(kingPos).getTeamColor() == color) {
+          return kingPos;
+        }
+      }
+    }
+    return kingPos;
+  }
+
   /**
    * Determines if the given team is in check
    *
@@ -91,18 +106,7 @@ public class ChessGame {
    */
   public boolean isInCheck(TeamColor teamColor) {
     ChessPosition kingPos = new ChessPosition(0, 0);
-    for (int i = 1; i < 9; ++i) {
-      for (int j = 1; j < 9; ++j) {
-        kingPos = new ChessPosition(i, j);
-        System.out.println("King pos: " + kingPos);
-        if (board.getPiece(kingPos) != null && board.getPiece(kingPos).getPieceType() == ChessPiece.PieceType.KING
-                && board.getPiece(kingPos).getTeamColor() == teamColor) {
-          System.out.println("Real King pos: " + kingPos);
-          break;
-        }
-      }
-    }
-    System.out.println("Second real King pos: " + kingPos);
+    kingPos = KingFinder(teamColor);
     ChessPosition enemyPos;
     for (int i = 1; i < 9; ++i) {
       for (int j = 1; j < 9; ++j) {
@@ -111,7 +115,7 @@ public class ChessGame {
         if (board.getPiece(enemyPos) != null && board.getPiece(enemyPos).getTeamColor() != teamColor) {
           enemyMoves = board.getPiece(enemyPos).pieceMoves(board, enemyPos);
           for (ChessMove move : enemyMoves) {
-            if (move.getEndPosition() == kingPos) {
+            if (move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
               return true;
             }
           }

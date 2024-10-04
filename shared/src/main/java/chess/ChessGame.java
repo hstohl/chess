@@ -122,7 +122,7 @@ public class ChessGame {
         Collection<ChessMove> enemyMoves;
         enemyPos = new ChessPosition(i, j);
         if (tempBoard.getPiece(enemyPos) != null && tempBoard.getPiece(enemyPos).getTeamColor() != teamColor) {
-          enemyMoves = tempBoard.getPiece(enemyPos).pieceMoves(tempBoard, enemyPos); //TODO should be validmoves once it works
+          enemyMoves = tempBoard.getPiece(enemyPos).pieceMoves(tempBoard, enemyPos); //maybe should be validMoves instead?
           for (ChessMove move : enemyMoves) {
             if (move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
               return true;

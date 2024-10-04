@@ -74,7 +74,6 @@ public class ChessGame {
   public void makeMove(ChessMove move) throws InvalidMoveException {
     if (board.getPiece(move.getStartPosition()) != null && board.getPiece(move.getStartPosition()).getTeamColor() == getTeamTurn()
             && validMoves(move.getStartPosition()).contains(move)) {
-      System.out.println("Good Valid Move");
       if (move.getPromotionPiece() == null) {
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         board.removePiece(move.getStartPosition());
@@ -86,7 +85,6 @@ public class ChessGame {
       }
 
     } else {
-      //System.out.println("Invalid Move");
       throw new InvalidMoveException("Invalid Move");
     }
     if (getTeamTurn() == TeamColor.WHITE) {
@@ -125,14 +123,11 @@ public class ChessGame {
         enemyPos = new ChessPosition(i, j);
         if (tempBoard.getPiece(enemyPos) != null && tempBoard.getPiece(enemyPos).getTeamColor() != teamColor) {
           enemyMoves = tempBoard.getPiece(enemyPos).pieceMoves(tempBoard, enemyPos); //TODO should be validmoves once it works
-          //System.out.println(enemyMoves);
           for (ChessMove move : enemyMoves) {
             if (move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
               return true;
             }
           }
-        } else {
-          //System.out.println("Fake enemy pos: " + enemyPos);
         }
       }
     }
@@ -146,8 +141,6 @@ public class ChessGame {
    * @return True if the specified team is in check
    */
   public boolean isInCheck(TeamColor teamColor) {
-    ChessPosition kingPos;
-    //kingPos = KingFinder(teamColor);
     return wouldBeInCheck(teamColor, board);
   }
 
@@ -173,27 +166,6 @@ public class ChessGame {
           if (!possibleMoves.isEmpty()) {
             return false;
           }
-          /*possibleMoves = fakeBoard.getPiece(friendlyPos).validMoves(fakeBoard, friendlyPos);
-          //Collection<ChessMove> possibleMoves = fakeBoard.getPiece(kingPos).pieceMoves(fakeBoard, kingPos);
-          for (ChessMove move : possibleMoves) {
-            //move King on Fake Board
-            System.out.println("King finder before first move: \n" + KingFinder(teamColor, fakeBoard));
-            fakeBoard.addPiece(move.getEndPosition(), fakeBoard.getPiece(move.getStartPosition()));
-            fakeBoard.removePiece(move.getStartPosition());
-            System.out.println("King finder after first move: \n" + KingFinder(teamColor, fakeBoard));
-            System.out.println("Move done: \n" + move);
-            //end
-            if (!wouldBeInCheck(teamColor, fakeBoard)) {
-              System.out.println("Valid Move: " + move);
-              return false;
-            }
-            //return King on Fake Board
-            System.out.println("King finder before move back: \n" + KingFinder(teamColor, fakeBoard));
-            fakeBoard = new ChessBoard(board);
-            System.out.println("King finder after move back: \n" + KingFinder(teamColor, fakeBoard));
-            //end
-          }
-          */
         }
       }
     }

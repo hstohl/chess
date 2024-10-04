@@ -20,6 +20,17 @@ public class ChessBoard {
 
   }
 
+  ChessBoard(ChessBoard copy) {
+    //this.squares = copy.squares;
+    this.squares = new ChessPiece[copy.squares.length][];
+    for (int i = 1; i < 9; ++i) {
+      this.squares[i] = new ChessPiece[copy.squares[i].length];
+      for (int j = 1; j < 9; ++j) {
+        this.squares[i][j] = copy.squares[i][j];
+      }
+    }
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -37,11 +48,18 @@ public class ChessBoard {
     return Arrays.deepHashCode(squares);
   }
 
+
   @Override
   public String toString() {
-    return "ChessBoard{" +
-            "squares=" + Arrays.toString(squares) +
-            '}';
+    String s = "ChessBoard{" + "squares=";
+    for (int i = 1; i < 9; ++i) {
+      for (int j = 1; j < 9; ++j) {
+        if (squares[i][j] != null) {
+          s = s + squares[i][j].toString() + ", \n";
+        }
+      }
+    }
+    return s;
   }
 
   /**

@@ -57,7 +57,7 @@ public class ChessGame {
     for (ChessMove move : allMoves) {
       tempBoard.addPiece(move.getEndPosition(), tempBoard.getPiece(move.getStartPosition()));
       tempBoard.removePiece(move.getStartPosition());
-      if (!wouldBeInCheck(teamColor, tempBoard)) {
+      if (!wouldBeInCheck(teamColor, tempBoard) && !allValidMoves.contains(move)) {
         allValidMoves.add(move);
       }
       tempBoard = new ChessBoard(board);

@@ -211,14 +211,18 @@ public class ChessGame {
     ChessBoard fakeBoard = new ChessBoard(board);
     ChessPosition kingPos = KingFinder(teamColor, fakeBoard);
     ChessPosition friendlyPos;
-    for (int i = 1; i < 9; ++i) {
-      for (int j = 1; j < 9; ++j) {
-        Collection<ChessMove> possibleMoves;
-        friendlyPos = new ChessPosition(i, j);
-        if (fakeBoard.getPiece(friendlyPos) != null && fakeBoard.getPiece(friendlyPos).getTeamColor() == teamColor) {
-          possibleMoves = validMoves(friendlyPos);
-          if (!possibleMoves.isEmpty()) {
-            return false;
+    if (isInCheck(teamColor)) {
+      return false;
+    } else {
+      for (int i = 1; i < 9; ++i) {
+        for (int j = 1; j < 9; ++j) {
+          Collection<ChessMove> possibleMoves;
+          friendlyPos = new ChessPosition(i, j);
+          if (fakeBoard.getPiece(friendlyPos) != null && fakeBoard.getPiece(friendlyPos).getTeamColor() == teamColor) {
+            possibleMoves = validMoves(friendlyPos);
+            if (!possibleMoves.isEmpty()) {
+              return false;
+            }
           }
         }
       }

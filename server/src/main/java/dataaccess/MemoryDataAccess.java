@@ -21,4 +21,9 @@ public class MemoryDataAccess implements DataAccess {
   public void addUser(UserData newUser) {
     myUserData.add(newUser);
   }
+
+  @Override
+  public void clear() {
+    myUserData.clear();
+  }
 }

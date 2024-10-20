@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.protobuf.ServiceException;
 import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
+import model.AuthData;
+import model.LogoutRequest;
 import model.UserData;
 import services.UserService;
 import spark.*;
@@ -28,6 +30,7 @@ public class Server {
     Spark.post("/user", this::createUser);
     Spark.delete("/db", (req, response) -> deleteDB());
     Spark.post("/session", this::loginUser);
+    Spark.delete("/session", this::logoutUser);
 
     Spark.awaitInitialization();
     return Spark.port();
@@ -48,6 +51,12 @@ public class Server {
     var user = serializer.fromJson(req.body(), UserData.class);
     var result = service.login(user);
     return serializer.toJson(result);
+  }
+
+  private String logoutUser(Request req, Response res) throws ServiceException {
+    var auth = req.headers("Authorization");
+    service.logout(auth);
+    return "{}";
   }
 
   public void stop() {

@@ -6,6 +6,7 @@ import dataaccess.AuthMemoryDataAccess;
 import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
+import model.LogoutRequest;
 import model.UserData;
 
 import java.util.Objects;
@@ -50,6 +51,10 @@ public class UserService {
 
   public AuthData login(UserData user) throws ServiceException {
     UserData realUser = dataAccess.getUser(user.username());
+
+    if (dataAccess.getUser(user.username()) == null) {
+      throw new ServiceException("Error: User Doesn't Exist");
+    }
     if (!Objects.equals(realUser.password(), user.password())) {
       throw new ServiceException("Error: Password doesn't match");
     }
@@ -60,7 +65,13 @@ public class UserService {
     return authDataAccess.getAuth(user.username());
   }
 
-  public void logout(AuthData auth) {
+  public void logout(String auth) throws ServiceException {
+    AuthData authData = authDataAccess.getAuthT(auth);
 
+    if (authData == null) {
+      throw new ServiceException("Error: Unauthorized");
+    }
+
+    authDataAccess.removeAuth(authData);
   }
 }

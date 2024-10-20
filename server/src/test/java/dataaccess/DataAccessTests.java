@@ -22,4 +22,11 @@ public class DataAccessTests {
     authAccess.addAuth(auth);
     Assertions.assertEquals("askdhks", authAccess.getAuth("username").authToken());
   }
+
+  @Test
+  public void getAuthT() {
+    AuthData auth = new AuthData("askdhks", "username");
+    authAccess.addAuth(auth);
+    Assertions.assertEquals("username", authAccess.getAuthT("askdhks").username());
+  }
 }

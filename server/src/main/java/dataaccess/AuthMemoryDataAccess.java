@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -19,8 +18,22 @@ public class AuthMemoryDataAccess implements AuthDataAccess {
     return newAuth;
   }
 
+  public AuthData getAuthT(String token) {
+    AuthData myAuth = null;
+    for (AuthData auth : myAuthData) {
+      if (Objects.equals(auth.authToken(), token)) {
+        myAuth = auth;
+      }
+    }
+    return myAuth;
+  }
+
   public void addAuth(AuthData newAuth) {
     myAuthData.add(newAuth);
+  }
+
+  public void removeAuth(AuthData auth) {
+    myAuthData.remove(auth);
   }
 
   public void clear() {

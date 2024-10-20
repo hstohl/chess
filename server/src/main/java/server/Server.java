@@ -26,7 +26,8 @@ public class Server {
     Spark.init();
 
     Spark.post("/user", this::createUser);
-    Spark.delete("/db", (req, response) -> "{}");
+    Spark.delete("/db", (req, response) -> deleteDB());
+    Spark.post("/session", this::loginUser);
 
     Spark.awaitInitialization();
     return Spark.port();
@@ -36,17 +37,17 @@ public class Server {
     var newUser = serializer.fromJson(req.body(), UserData.class);
     var result = service.registerUser(newUser);
     return serializer.toJson(result);
-
-//    var g = new Gson();
-//    var newUser = g.fromJson(
-//            """
-//                    { "username":"", "password":"", "email":"" }
-//                    """, UserData.class);
-//    return newUser.toString();
   }
 
-  private void deleteDB() {
+  private String deleteDB() {
+    service.clear();
+    return "{}";
+  }
 
+  private String loginUser(Request req, Response res) throws ServiceException {
+    var user = serializer.fromJson(req.body(), UserData.class);
+    var result = service.login(user);
+    return serializer.toJson(result);
   }
 
   public void stop() {

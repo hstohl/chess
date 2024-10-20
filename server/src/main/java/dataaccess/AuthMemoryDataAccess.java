@@ -22,4 +22,8 @@ public class AuthMemoryDataAccess implements AuthDataAccess {
   public void addAuth(AuthData newAuth) {
     myAuthData.add(newAuth);
   }
+
+  public void clear() {
+    myAuthData.clear();
+  }
 }

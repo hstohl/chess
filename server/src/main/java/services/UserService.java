@@ -8,6 +8,7 @@ import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class UserService {
@@ -16,6 +17,11 @@ public class UserService {
 
   public UserService(DataAccess dataAccess) {
     this.dataAccess = dataAccess;
+  }
+
+  public void clear() {
+    dataAccess.clear();
+    authDataAccess.clear();
   }
 
   public AuthData registerUser(UserData newUser) throws ServiceException {
@@ -42,9 +48,16 @@ public class UserService {
     return new AuthData(authToken, username);
   }
 
-  public AuthData login(UserData user) {
+  public AuthData login(UserData user) throws ServiceException {
+    UserData realUser = dataAccess.getUser(user.username());
+    if (!Objects.equals(realUser.password(), user.password())) {
+      throw new ServiceException("Error: Password doesn't match");
+    }
 
-    return new AuthData("a", "u");
+    AuthData auth = newAuth(user.username());
+    authDataAccess.addAuth(auth);
+
+    return authDataAccess.getAuth(user.username());
   }
 
   public void logout(AuthData auth) {

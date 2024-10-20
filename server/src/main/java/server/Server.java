@@ -6,6 +6,7 @@ import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.LogoutRequest;
+import model.NewGameRequest;
 import model.UserData;
 import services.UserService;
 import spark.*;
@@ -31,6 +32,10 @@ public class Server {
     Spark.delete("/db", (req, response) -> deleteDB());
     Spark.post("/session", this::loginUser);
     Spark.delete("/session", this::logoutUser);
+    Spark.get("/game", this::getGames);
+    Spark.post("/game", this::createGame);
+    Spark.put("/game", this::joinGame);
+
 
     Spark.awaitInitialization();
     return Spark.port();
@@ -58,6 +63,23 @@ public class Server {
     service.logout(auth);
     return "{}";
   }
+
+  private String getGames(Request req, Response res) throws ServiceException {
+
+    return new String("{ \"games\": [{\"gameID\": 1234, \"whiteUsername\":\"\", \"blackUsername\":\"\", \"gameName:\"\"} ]}");
+  }
+
+  private String createGame(Request req, Response res) throws ServiceException {
+    var gameName = serializer.fromJson(req.body(), NewGameRequest.class);
+    var result = service.createGame(gameName, req.headers("Authorization"));
+    return serializer.toJson(result);
+  }
+
+  private String joinGame(Request req, Response res) throws ServiceException {
+
+    return new String("{}");
+  }
+
 
   public void stop() {
     Spark.stop();

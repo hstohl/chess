@@ -1,13 +1,9 @@
 package services;
 
+import chess.ChessGame;
 import com.google.protobuf.ServiceException;
-import dataaccess.AuthDataAccess;
-import dataaccess.AuthMemoryDataAccess;
-import dataaccess.DataAccess;
-import dataaccess.MemoryDataAccess;
-import model.AuthData;
-import model.LogoutRequest;
-import model.UserData;
+import dataaccess.*;
+import model.*;
 
 import java.util.Objects;
 import java.util.Random;
@@ -15,6 +11,7 @@ import java.util.Random;
 public class UserService {
   private final DataAccess dataAccess;
   private final AuthDataAccess authDataAccess = new AuthMemoryDataAccess();
+  private final GameDataAccess gameDataAccess = new GameMemoryDataAccess();
 
   public UserService(DataAccess dataAccess) {
     this.dataAccess = dataAccess;
@@ -41,9 +38,16 @@ public class UserService {
   public AuthData newAuth(String username) { //40 to 122
     Random rnd = new Random();
     String authToken = "";
-    for (int i = 0; i < 11; ++i) {
-      int rndAsciiValue = rnd.nextInt(83) + 40;
-      authToken = authToken + (char) rndAsciiValue;
+    boolean unique = false;
+    while (!unique) {
+      authToken = "";
+      for (int i = 0; i < 11; ++i) {
+        int rndAsciiValue = rnd.nextInt(83) + 40;
+        authToken = authToken + (char) rndAsciiValue;
+      }
+      if (authDataAccess.getAuthT(authToken) == null) {
+        unique = true;
+      }
     }
 
     return new AuthData(authToken, username);
@@ -73,5 +77,31 @@ public class UserService {
     }
 
     authDataAccess.removeAuth(authData);
+  }
+
+  public NewGameResult createGame(NewGameRequest newGameN, String token) throws ServiceException {
+    AuthData authData = authDataAccess.getAuthT(token);
+
+    if (authData == null) {
+      throw new ServiceException("Error: Unauthorized");
+    }
+
+    /*if (gameDataAccess.getGame(newGameN.gameName()) != null) {
+      throw new ServiceException("Error: Game Already Exists");
+    }*/
+
+    Random rnd = new Random();
+    int gameID = 1111;
+    boolean unique = false;
+    while (!unique) {
+      gameID = rnd.nextInt(10000);
+      if (gameDataAccess.getGameI(gameID) == null) {
+        unique = true;
+      }
+    }
+    GameData newGame = new GameData(gameID, "", "", newGameN.gameName(), new ChessGame());
+    gameDataAccess.addGame(newGame);
+
+    return new NewGameResult(newGame.gameID());
   }
 }

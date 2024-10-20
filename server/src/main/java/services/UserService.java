@@ -20,6 +20,7 @@ public class UserService {
   public void clear() {
     dataAccess.clear();
     authDataAccess.clear();
+    gameDataAccess.clear();
   }
 
   public AuthData registerUser(UserData newUser) throws ServiceException {

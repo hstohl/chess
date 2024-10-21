@@ -72,11 +72,10 @@ public class Server {
     } catch (ServiceException e) {
       if (e.getMessage() == "Error: unauthorized") {
         res.status(401);
-        return errorHandler(e);
       } else {
         res.status(500);
-        return errorHandler(e);
       }
+      return errorHandler(e);
     }
   }
 
@@ -88,23 +87,40 @@ public class Server {
     } catch (ServiceException e) {
       if (e.getMessage() == "Error: unauthorized") {
         res.status(401);
-        return errorHandler(e);
       } else {
         res.status(500);
-        return errorHandler(e);
       }
+      return errorHandler(e);
     }
   }
 
   private String getGames(Request req, Response res) throws ServiceException {
-    var result = service.listGames(req.headers("Authorization"));
-    return serializer.toJson(result);
+    try {
+      var result = service.listGames(req.headers("Authorization"));
+      return serializer.toJson(result);
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: unauthorized") {
+        res.status(401);
+      } else {
+        res.status(500);
+      }
+      return errorHandler(e);
+    }
   }
 
   private String createGame(Request req, Response res) throws ServiceException {
-    var gameName = serializer.fromJson(req.body(), NewGameRequest.class);
-    var result = service.createGame(gameName, req.headers("Authorization"));
-    return serializer.toJson(result);
+    try {
+      var gameName = serializer.fromJson(req.body(), NewGameRequest.class);
+      var result = service.createGame(gameName, req.headers("Authorization"));
+      return serializer.toJson(result);
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: unauthorized") {
+        res.status(401);
+      } else {
+        res.status(500);
+      }
+      return errorHandler(e);
+    }
   }
 
   private String joinGame(Request req, Response res) throws ServiceException {

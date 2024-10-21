@@ -96,10 +96,6 @@ public class UserService {
       throw new ServiceException("Error: unauthorized");
     }
 
-    /*if (gameDataAccess.getGame(newGameN.gameName()) != null) {
-      throw new ServiceException("Error: Game Already Exists");
-    }*/
-
     Random rnd = new Random();
     int gameID = 1111;
     boolean unique = false;

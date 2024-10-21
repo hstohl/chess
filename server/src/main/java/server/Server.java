@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.protobuf.ServiceException;
 import dataaccess.DataAccess;
 import dataaccess.MemoryDataAccess;
-import model.AuthData;
-import model.LogoutRequest;
-import model.NewGameRequest;
-import model.UserData;
+import model.*;
 import services.UserService;
 import spark.*;
 
@@ -76,9 +73,10 @@ public class Server {
   }
 
   private String joinGame(Request req, Response res) throws ServiceException {
-    
+    var joinGameReq = serializer.fromJson(req.body(), JoinGameRequest.class);
+    var result = service.joinGame(req.headers("Authorization"), joinGameReq);
 
-    return new String("{}");
+    return serializer.toJson(result);
   }
 
 

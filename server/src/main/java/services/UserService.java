@@ -1,12 +1,16 @@
 package services;
 
 import chess.ChessGame;
+import com.google.protobuf.Service;
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
 import model.*;
 
 import java.util.Objects;
 import java.util.Random;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 public class UserService {
   private final DataAccess dataAccess;
@@ -101,10 +105,43 @@ public class UserService {
         unique = true;
       }
     }
-    GameData newGame = new GameData(gameID, "", "", newGameN.gameName(), new ChessGame());
+    GameData newGame = new GameData(gameID, null, null, newGameN.gameName(), new ChessGame());
     gameDataAccess.addGame(newGame);
 
     return new NewGameResult(newGame.gameID());
+  }
+
+  public SucessResponse joinGame(String authToken, JoinGameRequest req) throws ServiceException {
+    AuthData authData = authDataAccess.getAuthT(authToken);
+    if (authData == null) {
+      throw new ServiceException("Error: Unauthorized");
+    }
+
+    GameData gameData = gameDataAccess.getGameI(req.gameID());
+    if (gameData == null) {
+      throw new ServiceException("Error: Game Doesn't Exist");
+    }
+
+    if (req.playerColor() == WHITE && gameData.whiteUsername() != null) {
+      throw new ServiceException("Error: White already taken");
+    }
+    if (req.playerColor() == BLACK && gameData.blackUsername() != null) {
+      throw new ServiceException("Error: Black already taken");
+    }
+
+    if (req.playerColor() == WHITE) {
+      GameData updatedGame = new GameData(gameData.gameID(), authData.username(),
+              gameData.blackUsername(), gameData.gameName(), gameData.game());
+      gameDataAccess.updateGame(updatedGame);
+    } else if (req.playerColor() == BLACK) {
+      GameData updatedGame = new GameData(gameData.gameID(), gameData.whiteUsername(),
+              authData.username(), gameData.gameName(), gameData.game());
+      gameDataAccess.updateGame(updatedGame);
+    } else {
+      throw new ServiceException("Error: bad request");
+    }
+
+    return new SucessResponse();
   }
 
   public GameList listGames(String authToken) throws ServiceException {

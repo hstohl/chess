@@ -15,6 +15,8 @@ public interface GameDataAccess {
 
   public GameData getGameI(int ID);
 
+  public void updateGame(GameData updatedGame);
+
   public Collection<GameDataMini> listGames();
 
   public void clear();

@@ -35,6 +35,17 @@ public class GameMemoryDataAccess implements GameDataAccess {
     return myGame;
   }
 
+  public void updateGame(GameData updatedGame) {
+    GameData myGame = null;
+    for (GameData game : myGameData) {
+      if (Objects.equals(game.gameID(), updatedGame.gameID())) {
+        myGame = game;
+      }
+    }
+    myGameData.remove(myGame);
+    myGameData.add(updatedGame);
+  }
+
   public Collection<GameDataMini> listGames() {
     ArrayList<GameDataMini> myGameDataMini = new ArrayList<>();
     for (GameData game : myGameData) {

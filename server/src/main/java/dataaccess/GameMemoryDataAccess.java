@@ -2,8 +2,10 @@ package dataaccess;
 
 import model.AuthData;
 import model.GameData;
+import model.GameDataMini;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class GameMemoryDataAccess implements GameDataAccess {
@@ -31,6 +33,14 @@ public class GameMemoryDataAccess implements GameDataAccess {
       }
     }
     return myGame;
+  }
+
+  public Collection<GameDataMini> listGames() {
+    ArrayList<GameDataMini> myGameDataMini = new ArrayList<>();
+    for (GameData game : myGameData) {
+      myGameDataMini.add(new GameDataMini(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+    }
+    return myGameDataMini;
   }
 
   public void clear() {

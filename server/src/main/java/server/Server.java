@@ -65,8 +65,8 @@ public class Server {
   }
 
   private String getGames(Request req, Response res) throws ServiceException {
-
-    return new String("{ \"games\": [{\"gameID\": 1234, \"whiteUsername\":\"\", \"blackUsername\":\"\", \"gameName:\"\"} ]}");
+    var result = service.listGames(req.headers("Authorization"));
+    return serializer.toJson(result);
   }
 
   private String createGame(Request req, Response res) throws ServiceException {
@@ -76,6 +76,7 @@ public class Server {
   }
 
   private String joinGame(Request req, Response res) throws ServiceException {
+    
 
     return new String("{}");
   }

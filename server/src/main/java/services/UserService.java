@@ -17,10 +17,11 @@ public class UserService {
     this.dataAccess = dataAccess;
   }
 
-  public void clear() {
+  public String clear() {
     dataAccess.clear();
     authDataAccess.clear();
     gameDataAccess.clear();
+    return "{}";
   }
 
   public AuthData registerUser(UserData newUser) throws ServiceException {
@@ -104,5 +105,15 @@ public class UserService {
     gameDataAccess.addGame(newGame);
 
     return new NewGameResult(newGame.gameID());
+  }
+
+  public GameList listGames(String authToken) throws ServiceException {
+    AuthData authData = authDataAccess.getAuthT(authToken);
+
+    if (authData == null) {
+      throw new ServiceException("Error: Unauthorized");
+    }
+
+    return new GameList(gameDataAccess.listGames());
   }
 }

@@ -68,9 +68,21 @@ public class Server {
   }
 
   private String loginUser(Request req, Response res) throws ServiceException {
-    var user = serializer.fromJson(req.body(), UserData.class);
-    var result = service.login(user);
-    return serializer.toJson(result);
+    try {
+      var user = serializer.fromJson(req.body(), UserData.class);
+      var result = service.login(user);
+      return serializer.toJson(result);
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: unauthorized") {
+        res.status(401);
+        var errorResponse = Map.of("message", "Error: unauthorized");
+        return serializer.toJson(errorResponse);
+      } else {
+        res.status(500);
+        var errorResponse = Map.of("message", "Error");
+        return serializer.toJson(errorResponse);
+      }
+    }
   }
 
   private String logoutUser(Request req, Response res) throws ServiceException {

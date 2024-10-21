@@ -67,10 +67,10 @@ public class UserService {
     UserData realUser = dataAccess.getUser(user.username());
 
     if (dataAccess.getUser(user.username()) == null) {
-      throw new ServiceException("Error: User Doesn't Exist");
+      throw new ServiceException("Error: unauthorized");
     }
     if (!Objects.equals(realUser.password(), user.password())) {
-      throw new ServiceException("Error: Password doesn't match");
+      throw new ServiceException("Error: unauthorized");
     }
 
     AuthData auth = newAuth(user.username());

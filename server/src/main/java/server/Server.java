@@ -48,16 +48,13 @@ public class Server {
     } catch (ServiceException e) {
       if (e.getMessage() == "Error: already taken") {
         res.status(403);
-        var errorResponse = Map.of("message", "Error: already taken");
-        return serializer.toJson(errorResponse);
+        return errorHandler(e);
       } else if (e.getMessage() == "Error: bad request") {
         res.status(400);
-        var errorResponse = Map.of("message", "Error: bad request");
-        return serializer.toJson(errorResponse);
+        return errorHandler(e);
       } else {
         res.status(500);
-        var errorResponse = Map.of("message", "Error");
-        return serializer.toJson(errorResponse);
+        return errorHandler(e);
       }
     }
   }
@@ -75,20 +72,28 @@ public class Server {
     } catch (ServiceException e) {
       if (e.getMessage() == "Error: unauthorized") {
         res.status(401);
-        var errorResponse = Map.of("message", "Error: unauthorized");
-        return serializer.toJson(errorResponse);
+        return errorHandler(e);
       } else {
         res.status(500);
-        var errorResponse = Map.of("message", "Error");
-        return serializer.toJson(errorResponse);
+        return errorHandler(e);
       }
     }
   }
 
   private String logoutUser(Request req, Response res) throws ServiceException {
-    var auth = req.headers("Authorization");
-    service.logout(auth);
-    return "{}";
+    try {
+      var auth = req.headers("Authorization");
+      service.logout(auth);
+      return "{}";
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: unauthorized") {
+        res.status(401);
+        return errorHandler(e);
+      } else {
+        res.status(500);
+        return errorHandler(e);
+      }
+    }
   }
 
   private String getGames(Request req, Response res) throws ServiceException {
@@ -107,6 +112,11 @@ public class Server {
     var result = service.joinGame(req.headers("Authorization"), joinGameReq);
 
     return serializer.toJson(result);
+  }
+
+  private String errorHandler(ServiceException e) {
+    var errorResponse = Map.of("message", e.getMessage());
+    return serializer.toJson(errorResponse);
   }
 
 

@@ -83,7 +83,7 @@ public class UserService {
     AuthData authData = authDataAccess.getAuthT(auth);
 
     if (authData == null) {
-      throw new ServiceException("Error: Unauthorized");
+      throw new ServiceException("Error: unauthorized");
     }
 
     authDataAccess.removeAuth(authData);
@@ -93,7 +93,7 @@ public class UserService {
     AuthData authData = authDataAccess.getAuthT(token);
 
     if (authData == null) {
-      throw new ServiceException("Error: Unauthorized");
+      throw new ServiceException("Error: unauthorized");
     }
 
     /*if (gameDataAccess.getGame(newGameN.gameName()) != null) {
@@ -118,7 +118,7 @@ public class UserService {
   public SucessResponse joinGame(String authToken, JoinGameRequest req) throws ServiceException {
     AuthData authData = authDataAccess.getAuthT(authToken);
     if (authData == null) {
-      throw new ServiceException("Error: Unauthorized");
+      throw new ServiceException("Error: unauthorized");
     }
 
     GameData gameData = gameDataAccess.getGameI(req.gameID());
@@ -152,7 +152,7 @@ public class UserService {
     AuthData authData = authDataAccess.getAuthT(authToken);
 
     if (authData == null) {
-      throw new ServiceException("Error: Unauthorized");
+      throw new ServiceException("Error: unauthorized");
     }
 
     return new GameList(gameDataAccess.listGames());

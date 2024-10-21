@@ -8,6 +8,8 @@ import model.*;
 import services.UserService;
 import spark.*;
 
+import java.util.Map;
+
 public class Server {
   private final DataAccess dataAccess = new MemoryDataAccess();
   private final UserService service = new UserService(dataAccess);
@@ -39,9 +41,25 @@ public class Server {
   }
 
   private String createUser(Request req, Response res) throws ServiceException {
-    var newUser = serializer.fromJson(req.body(), UserData.class);
-    var result = service.registerUser(newUser);
-    return serializer.toJson(result);
+    try {
+      var newUser = serializer.fromJson(req.body(), UserData.class);
+      var result = service.registerUser(newUser);
+      return serializer.toJson(result);
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: already taken") {
+        res.status(403);
+        var errorResponse = Map.of("message", "Error: already taken");
+        return serializer.toJson(errorResponse);
+      } else if (e.getMessage() == "Error: bad request") {
+        res.status(400);
+        var errorResponse = Map.of("message", "Error: bad request");
+        return serializer.toJson(errorResponse);
+      } else {
+        res.status(500);
+        var errorResponse = Map.of("message", "Error");
+        return serializer.toJson(errorResponse);
+      }
+    }
   }
 
   private String deleteDB() {

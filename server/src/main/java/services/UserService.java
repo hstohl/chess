@@ -30,7 +30,11 @@ public class UserService {
 
   public AuthData registerUser(UserData newUser) throws ServiceException {
     if (dataAccess.getUser(newUser.username()) != null) {
-      throw new ServiceException("User Already Exists");
+      throw new ServiceException("Error: already taken");
+    }
+
+    if (newUser.password() == null) {
+      throw new ServiceException("Error: bad request");
     }
 
     dataAccess.addUser(newUser);

@@ -20,10 +20,6 @@ public class Server {
 
     Spark.staticFiles.location("web");
 
-    // Register your endpoints and handle exceptions here.
-    /*Spark.post("/user", (req, res) ->
-            (new RegisterHandler()).handleRequest(req, res));*/
-
     //This line initializes the server and can be removed once you have a functioning endpoint
     Spark.init();
 
@@ -124,10 +120,25 @@ public class Server {
   }
 
   private String joinGame(Request req, Response res) throws ServiceException {
-    var joinGameReq = serializer.fromJson(req.body(), JoinGameRequest.class);
-    var result = service.joinGame(req.headers("Authorization"), joinGameReq);
-
-    return serializer.toJson(result);
+    try {
+      var joinGameReq = serializer.fromJson(req.body(), JoinGameRequest.class);
+      var result = service.joinGame(req.headers("Authorization"), joinGameReq);
+      return serializer.toJson(result);
+    } catch (ServiceException e) {
+      if (e.getMessage() == "Error: bad request") {
+        res.status(400);
+        return errorHandler(e);
+      } else if (e.getMessage() == "Error: unauthorized") {
+        res.status(401);
+        return errorHandler(e);
+      } else if (e.getMessage() == "Error: already taken") {
+        res.status(403);
+        return errorHandler(e);
+      } else {
+        res.status(500);
+        return errorHandler(e);
+      }
+    }
   }
 
   private String errorHandler(ServiceException e) {

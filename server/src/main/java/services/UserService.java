@@ -119,14 +119,14 @@ public class UserService {
 
     GameData gameData = gameDataAccess.getGameI(req.gameID());
     if (gameData == null) {
-      throw new ServiceException("Error: Game Doesn't Exist");
+      throw new ServiceException("Error: bad request");
     }
 
     if (req.playerColor() == WHITE && gameData.whiteUsername() != null) {
-      throw new ServiceException("Error: White already taken");
+      throw new ServiceException("Error: already taken");
     }
     if (req.playerColor() == BLACK && gameData.blackUsername() != null) {
-      throw new ServiceException("Error: Black already taken");
+      throw new ServiceException("Error: already taken");
     }
 
     if (req.playerColor() == WHITE) {

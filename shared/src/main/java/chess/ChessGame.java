@@ -95,7 +95,7 @@ public class ChessGame {
   }
 
 
-  public ChessPosition KingFinder(TeamColor color, ChessBoard tempBoard) {
+  public ChessPosition kingFinder(TeamColor color, ChessBoard tempBoard) {
     ChessPosition kingPos = new ChessPosition(0, 0);
     for (int i = 1; i < 9; ++i) {
       for (int j = 1; j < 9; ++j) {
@@ -112,7 +112,7 @@ public class ChessGame {
 
   public boolean wouldBeInCheck(TeamColor teamColor, ChessBoard tempBoard) {
     ChessPosition kingPos;
-    kingPos = KingFinder(teamColor, tempBoard);
+    kingPos = kingFinder(teamColor, tempBoard);
     if (kingPos.getColumn() == 0 && kingPos.getRow() == 0) {
       return false;
     }
@@ -152,7 +152,7 @@ public class ChessGame {
    */
   public boolean isInCheckmate(TeamColor teamColor) {
     ChessBoard fakeBoard = new ChessBoard(board);
-    ChessPosition kingPos = KingFinder(teamColor, fakeBoard);
+    ChessPosition kingPos = kingFinder(teamColor, fakeBoard);
     if (!isInCheck(teamColor)) {
       return false;
     }
@@ -181,7 +181,7 @@ public class ChessGame {
    */
   public boolean isInStalemate(TeamColor teamColor) {
     ChessBoard fakeBoard = new ChessBoard(board);
-    ChessPosition kingPos = KingFinder(teamColor, fakeBoard);
+    ChessPosition kingPos = kingFinder(teamColor, fakeBoard);
     ChessPosition friendlyPos;
     if (isInCheck(teamColor)) {
       return false;

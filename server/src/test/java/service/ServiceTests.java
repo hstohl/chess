@@ -29,14 +29,14 @@ public class ServiceTests {
   }
 
   @Test
-  public void RegisterTest() throws ServiceException {
+  public void registerTest() throws ServiceException {
     service.clear();
     service.registerUser(new UserData("u", "p", "e"));
     Assertions.assertEquals("p", dataAccess.getUser("u").password());
   }
 
   @Test
-  public void RegisterFailTest() throws ServiceException {
+  public void registerFailTest() throws ServiceException {
     service.clear();
     UserData try1 = new UserData("copy", "p", "e");
     UserData try2 = new UserData("copy", "p", "e");
@@ -51,7 +51,7 @@ public class ServiceTests {
 
 
   @Test
-  public void RegisterFailTest2() {
+  public void registerFailTest2() {
     service.clear();
     UserData try3 = new UserData("u", "", "e");
 

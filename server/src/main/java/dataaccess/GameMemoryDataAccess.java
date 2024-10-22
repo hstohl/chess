@@ -25,10 +25,10 @@ public class GameMemoryDataAccess implements GameDataAccess {
     myGameData.add(newGame);
   }
 
-  public GameData getGameI(int ID) {
+  public GameData getGameI(int id) {
     GameData myGame = null;
     for (GameData game : myGameData) {
-      if (Objects.equals(game.gameID(), ID)) {
+      if (Objects.equals(game.gameID(), id)) {
         myGame = game;
       }
     }

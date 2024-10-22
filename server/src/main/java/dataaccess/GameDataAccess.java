@@ -13,7 +13,7 @@ public interface GameDataAccess {
 
   public void addGame(GameData newGame);
 
-  public GameData getGameI(int ID);
+  public GameData getGameI(int id);
 
   public void updateGame(GameData updatedGame);
 

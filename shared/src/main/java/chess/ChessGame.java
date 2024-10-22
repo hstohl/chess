@@ -123,13 +123,19 @@ public class ChessGame {
         enemyPos = new ChessPosition(i, j);
         if (tempBoard.getPiece(enemyPos) != null && tempBoard.getPiece(enemyPos).getTeamColor() != teamColor) {
           enemyMoves = tempBoard.getPiece(enemyPos).pieceMoves(tempBoard, enemyPos); //maybe should be validMoves instead?
-          for (ChessMove move : enemyMoves) {
-            //max depth
-            if (move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
-              return true;
-            }
+          if (threatenedKingChecker(enemyMoves, kingPos)) {
+            return true;
           }
         }
+      }
+    }
+    return false;
+  }
+
+  public boolean threatenedKingChecker(Collection<ChessMove> enemyMoves, ChessPosition kingPos) {
+    for (ChessMove move : enemyMoves) {
+      if (move.getEndPosition().getColumn() == kingPos.getColumn() && move.getEndPosition().getRow() == kingPos.getRow()) {
+        return true;
       }
     }
     return false;
@@ -158,20 +164,9 @@ public class ChessGame {
       return false;
     }
     ChessPosition friendlyPos;
-    //dulpicated code start (191)
-    for (int i = 1; i < 9; ++i) {
-      for (int j = 1; j < 9; ++j) {
-        Collection<ChessMove> possibleMoves;
-        friendlyPos = new ChessPosition(i, j);
-        if (fakeBoard.getPiece(friendlyPos) != null && fakeBoard.getPiece(friendlyPos).getTeamColor() == teamColor) {
-          possibleMoves = validMoves(friendlyPos);
-          if (!possibleMoves.isEmpty()) {
-            return false;
-          }
-        }
-      }
+    if (!possibleMoves(fakeBoard, teamColor)) {
+      return false;
     }
-    //duplicated code end (191)
     return true;
   }
 
@@ -189,21 +184,27 @@ public class ChessGame {
     if (isInCheck(teamColor)) {
       return false;
     } else {
-      //dulpicated code start (160)
-      for (int i = 1; i < 9; ++i) {
-        for (int j = 1; j < 9; ++j) {
-          Collection<ChessMove> possibleMoves;
-          friendlyPos = new ChessPosition(i, j);
-          if (fakeBoard.getPiece(friendlyPos) != null && fakeBoard.getPiece(friendlyPos).getTeamColor() == teamColor) {
-            possibleMoves = validMoves(friendlyPos);
-            //max depth (will be fixed when we fix duplicate I think)
-            if (!possibleMoves.isEmpty()) {
-              return false;
-            }
+      if (!possibleMoves(fakeBoard, teamColor)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  public boolean possibleMoves(ChessBoard fakeBoard, TeamColor teamColor) {
+    ChessPosition friendlyPos;
+    for (int i = 1; i < 9; ++i) {
+      for (int j = 1; j < 9; ++j) {
+        Collection<ChessMove> possibleMoves;
+        friendlyPos = new ChessPosition(i, j);
+        if (fakeBoard.getPiece(friendlyPos) != null && fakeBoard.getPiece(friendlyPos).getTeamColor() == teamColor) {
+          possibleMoves = validMoves(friendlyPos);
+          if (!possibleMoves.isEmpty()) {
+            return false;
           }
         }
       }
-      //dulpicated code end (160)
     }
     return true;
   }

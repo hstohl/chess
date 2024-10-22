@@ -225,7 +225,8 @@ public class ServiceTests {
       service.joinGame("g", joinGame);
     } catch (ServiceException e) {
       Assertions.assertEquals("Error: already taken", e.getMessage());
-      Assertions.assertNotEquals("New User", gameDataAccess.getGame("My Named Game").whiteUsername());
+      Assertions.assertNotEquals("New User",
+              gameDataAccess.getGame("My Named Game").whiteUsername());
     }
   }
 
@@ -243,7 +244,8 @@ public class ServiceTests {
       service.joinGame("g", joinGame);
     } catch (ServiceException e) {
       Assertions.assertEquals("Error: already taken", e.getMessage());
-      Assertions.assertNotEquals("New User", gameDataAccess.getGame("My Named Game").blackUsername());
+      Assertions.assertNotEquals("New User",
+              gameDataAccess.getGame("My Named Game").blackUsername());
     }
   }
 

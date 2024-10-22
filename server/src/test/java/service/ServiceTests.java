@@ -20,7 +20,8 @@ public class ServiceTests {
   public void clearTest() {
     dataAccess.addUser(new UserData("u", "p", "e"));
     authDataAccess.addAuth((new AuthData("a", "u")));
-    gameDataAccess.addGame(new GameData(0, "wu", "bu", "gn", new ChessGame()));
+    gameDataAccess.addGame(new GameData(0, "wu",
+            "bu", "gn", new ChessGame()));
     service.clear();
     Assertions.assertNull(dataAccess.getUser("u"));
     Assertions.assertNull(authDataAccess.getAuth("u"));
@@ -162,7 +163,8 @@ public class ServiceTests {
   @Test
   public void joinGame() throws ServiceException {
     service.clear();
-    GameData newGame = new GameData(1234, null, null, "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -176,7 +178,8 @@ public class ServiceTests {
   @Test
   public void joinGameFail1() {
     service.clear();
-    GameData newGame = new GameData(1234, null, null, "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -193,7 +196,8 @@ public class ServiceTests {
   @Test
   public void joinGameFail2() {
     service.clear();
-    GameData newGame = new GameData(1234, null, null, "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -210,7 +214,8 @@ public class ServiceTests {
   @Test
   public void joinGameFail3() {
     service.clear();
-    GameData newGame = new GameData(1234, "o", null, "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, "o",
+            null, "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -227,7 +232,8 @@ public class ServiceTests {
   @Test
   public void joinGameFail4() {
     service.clear();
-    GameData newGame = new GameData(1234, null, "b", "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -246,9 +252,11 @@ public class ServiceTests {
     service.clear();
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
-    GameData newGame = new GameData(1234, null, "b", "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
-    GameData newGame2 = new GameData(1547, "yellow", "l", "My New Game", new ChessGame());
+    GameData newGame2 = new GameData(1547, "yellow",
+            "l", "My New Game", new ChessGame());
     gameDataAccess.addGame(newGame2);
 
     GameList list = service.listGames("g");
@@ -260,9 +268,11 @@ public class ServiceTests {
     service.clear();
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
-    GameData newGame = new GameData(1234, null, "b", "My Named Game", new ChessGame());
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
     gameDataAccess.addGame(newGame);
-    GameData newGame2 = new GameData(1547, "yellow", "l", "My New Game", new ChessGame());
+    GameData newGame2 = new GameData(1547, "yellow",
+            "l", "My New Game", new ChessGame());
     gameDataAccess.addGame(newGame2);
 
     try {

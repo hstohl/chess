@@ -58,8 +58,8 @@ public class Server {
   }
 
   private String deleteDB() {
-    service.clear();
-    return "{}";
+    var result = service.clear();
+    return serializer.toJson(result);
   }
 
   private String loginUser(Request req, Response res) {
@@ -80,8 +80,8 @@ public class Server {
   private String logoutUser(Request req, Response res) {
     try {
       var auth = req.headers("Authorization");
-      service.logout(auth);
-      return "{}";
+      var result = service.logout(auth);
+      return serializer.toJson(result);
     } catch (ServiceException e) {
       if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);

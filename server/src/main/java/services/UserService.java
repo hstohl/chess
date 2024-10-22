@@ -22,11 +22,11 @@ public class UserService {
     this.gameDataAccess = gameDataAccess;
   }
 
-  public String clear() {
+  public SuccessResponse clear() {
     dataAccess.clear();
     authDataAccess.clear();
     gameDataAccess.clear();
-    return "{}";
+    return new SuccessResponse();
   }
 
   public AuthData registerUser(UserData newUser) throws ServiceException {
@@ -48,20 +48,20 @@ public class UserService {
 
   public AuthData newAuth(String username) { //40 to 122
     Random rnd = new Random();
-    String authToken = "";
+    StringBuilder authToken = new StringBuilder();
     boolean unique = false;
     while (!unique) {
-      authToken = "";
+      authToken = new StringBuilder();
       for (int i = 0; i < 11; ++i) {
         int rndAsciiValue = rnd.nextInt(89) + 33;
-        authToken = authToken + (char) rndAsciiValue;
+        authToken.append((char) rndAsciiValue);
       }
-      if (authDataAccess.getAuthT(authToken) == null) {
+      if (authDataAccess.getAuthT(authToken.toString()) == null) {
         unique = true;
       }
     }
 
-    return new AuthData(authToken, username);
+    return new AuthData(authToken.toString(), username);
   }
 
   public AuthData login(UserData user) throws ServiceException {
@@ -80,7 +80,7 @@ public class UserService {
     return authDataAccess.getAuth(user.username());
   }
 
-  public void logout(String token) throws ServiceException {
+  public SuccessResponse logout(String token) throws ServiceException {
     AuthData authData = authDataAccess.getAuthT(token);
 
     if (authData == null) {
@@ -88,6 +88,7 @@ public class UserService {
     }
 
     authDataAccess.removeAuth(authData);
+    return new SuccessResponse();
   }
 
   public NewGameResult createGame(NewGameRequest newGameN, String token) throws ServiceException {
@@ -113,7 +114,7 @@ public class UserService {
     return new NewGameResult(newGame.gameID());
   }
 
-  public SucessResponse joinGame(String token, JoinGameRequest req) throws ServiceException {
+  public SuccessResponse joinGame(String token, JoinGameRequest req) throws ServiceException {
     AuthData authData = authDataAccess.getAuthT(token);
     if (authData == null) {
       throw new ServiceException("Error: unauthorized");
@@ -143,7 +144,7 @@ public class UserService {
       throw new ServiceException("Error: bad request");
     }
 
-    return new SucessResponse();
+    return new SuccessResponse();
   }
 
   public GameList listGames(String token) throws ServiceException {

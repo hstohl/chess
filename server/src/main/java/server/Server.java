@@ -2,17 +2,19 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.protobuf.ServiceException;
-import dataaccess.DataAccess;
-import dataaccess.MemoryDataAccess;
+import dataaccess.*;
 import model.*;
 import services.UserService;
 import spark.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Server {
   private final DataAccess dataAccess = new MemoryDataAccess();
-  private final UserService service = new UserService(dataAccess);
+  private final AuthDataAccess authDataAccess = new AuthMemoryDataAccess();
+  private final GameDataAccess gameDataAccess = new GameMemoryDataAccess();
+  private final UserService service = new UserService(dataAccess, authDataAccess, gameDataAccess);
   private final Gson serializer = new Gson();
 
   public int run(int desiredPort) {
@@ -36,16 +38,16 @@ public class Server {
     return Spark.port();
   }
 
-  private String createUser(Request req, Response res) throws ServiceException {
+  private String createUser(Request req, Response res) {
     try {
       var newUser = serializer.fromJson(req.body(), UserData.class);
       var result = service.registerUser(newUser);
       return serializer.toJson(result);
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: already taken") {
+      if (Objects.equals(e.getMessage(), "Error: already taken")) {
         res.status(403);
         return errorHandler(e);
-      } else if (e.getMessage() == "Error: bad request") {
+      } else if (Objects.equals(e.getMessage(), "Error: bad request")) {
         res.status(400);
         return errorHandler(e);
       } else {
@@ -60,13 +62,13 @@ public class Server {
     return "{}";
   }
 
-  private String loginUser(Request req, Response res) throws ServiceException {
+  private String loginUser(Request req, Response res) {
     try {
       var user = serializer.fromJson(req.body(), UserData.class);
       var result = service.login(user);
       return serializer.toJson(result);
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: unauthorized") {
+      if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {
         res.status(500);
@@ -75,13 +77,13 @@ public class Server {
     }
   }
 
-  private String logoutUser(Request req, Response res) throws ServiceException {
+  private String logoutUser(Request req, Response res) {
     try {
       var auth = req.headers("Authorization");
       service.logout(auth);
       return "{}";
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: unauthorized") {
+      if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {
         res.status(500);
@@ -90,12 +92,12 @@ public class Server {
     }
   }
 
-  private String getGames(Request req, Response res) throws ServiceException {
+  private String getGames(Request req, Response res) {
     try {
       var result = service.listGames(req.headers("Authorization"));
       return serializer.toJson(result);
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: unauthorized") {
+      if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {
         res.status(500);
@@ -104,13 +106,13 @@ public class Server {
     }
   }
 
-  private String createGame(Request req, Response res) throws ServiceException {
+  private String createGame(Request req, Response res) {
     try {
       var gameName = serializer.fromJson(req.body(), NewGameRequest.class);
       var result = service.createGame(gameName, req.headers("Authorization"));
       return serializer.toJson(result);
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: unauthorized") {
+      if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {
         res.status(500);
@@ -119,19 +121,19 @@ public class Server {
     }
   }
 
-  private String joinGame(Request req, Response res) throws ServiceException {
+  private String joinGame(Request req, Response res) {
     try {
       var joinGameReq = serializer.fromJson(req.body(), JoinGameRequest.class);
       var result = service.joinGame(req.headers("Authorization"), joinGameReq);
       return serializer.toJson(result);
     } catch (ServiceException e) {
-      if (e.getMessage() == "Error: bad request") {
+      if (Objects.equals(e.getMessage(), "Error: bad request")) {
         res.status(400);
         return errorHandler(e);
-      } else if (e.getMessage() == "Error: unauthorized") {
+      } else if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
         return errorHandler(e);
-      } else if (e.getMessage() == "Error: already taken") {
+      } else if (Objects.equals(e.getMessage(), "Error: already taken")) {
         res.status(403);
         return errorHandler(e);
       } else {

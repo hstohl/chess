@@ -1,7 +1,6 @@
 package services;
 
 import chess.ChessGame;
-import com.google.protobuf.Service;
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
 import model.*;
@@ -14,11 +13,13 @@ import static chess.ChessGame.TeamColor.WHITE;
 
 public class UserService {
   private final DataAccess dataAccess;
-  private final AuthDataAccess authDataAccess = new AuthMemoryDataAccess();
-  private final GameDataAccess gameDataAccess = new GameMemoryDataAccess();
+  private final AuthDataAccess authDataAccess;
+  private final GameDataAccess gameDataAccess;
 
-  public UserService(DataAccess dataAccess) {
+  public UserService(DataAccess dataAccess, AuthDataAccess authDataAccess, GameDataAccess gameDataAccess) {
     this.dataAccess = dataAccess;
+    this.authDataAccess = authDataAccess;
+    this.gameDataAccess = gameDataAccess;
   }
 
   public String clear() {
@@ -52,7 +53,7 @@ public class UserService {
     while (!unique) {
       authToken = "";
       for (int i = 0; i < 11; ++i) {
-        int rndAsciiValue = rnd.nextInt(83) + 40;
+        int rndAsciiValue = rnd.nextInt(89) + 33;
         authToken = authToken + (char) rndAsciiValue;
       }
       if (authDataAccess.getAuthT(authToken) == null) {

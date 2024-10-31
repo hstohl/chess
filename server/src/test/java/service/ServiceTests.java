@@ -18,7 +18,11 @@ public class ServiceTests {
 
   @Test
   public void clearTest() {
-    dataAccess.addUser(new UserData("u", "p", "e"));
+    try {
+      dataAccess.addUser(new UserData("u", "p", "e"));
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     authDataAccess.addAuth((new AuthData("a", "u")));
     gameDataAccess.addGame(new GameData(0, "wu",
             "bu", "gn", new ChessGame()));
@@ -73,7 +77,11 @@ public class ServiceTests {
   public void loginTest() throws ServiceException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
     Assertions.assertNotNull(authDataAccess.getAuth("u"));
@@ -83,7 +91,11 @@ public class ServiceTests {
   public void loginTestFail1() {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "pas", "e");
     try {
       service.login(loginReq);
@@ -107,7 +119,11 @@ public class ServiceTests {
   public void logoutTest() throws ServiceException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
     service.logout(authDataAccess.getAuth("u").authToken());
@@ -118,7 +134,11 @@ public class ServiceTests {
   public void logoutTestFail() {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "p", "e");
     try {
       service.login(loginReq);
@@ -133,7 +153,11 @@ public class ServiceTests {
   public void createGame() throws ServiceException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
 
@@ -148,7 +172,11 @@ public class ServiceTests {
   public void createGameFail() throws ServiceException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    dataAccess.addUser(user1);
+    try {
+      dataAccess.addUser(user1);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
 

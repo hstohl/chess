@@ -38,7 +38,11 @@ public class UserService {
       throw new ServiceException("Error: bad request");
     }
 
-    dataAccess.addUser(newUser);
+    try {
+      dataAccess.addUser(newUser);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
 
     AuthData auth = newAuth(newUser.username());
     authDataAccess.addAuth(auth);

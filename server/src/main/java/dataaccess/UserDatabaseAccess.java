@@ -6,6 +6,9 @@ import model.UserData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
 
 public class UserDatabaseAccess implements DataAccess {
 
@@ -15,7 +18,7 @@ public class UserDatabaseAccess implements DataAccess {
 
   public UserData getUser(String username) {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT username, json FROM pet WHERE id=?";
+      var statement = "SELECT username, password, email FROM user WHERE username = ?";
       try (var ps = conn.prepareStatement(statement)) {
         ps.setString(1, username);
         try (var rs = ps.executeQuery()) {
@@ -30,16 +33,46 @@ public class UserDatabaseAccess implements DataAccess {
     return null;
   }
 
-  public void addUser(UserData newUser) {
-
+  public void addUser(UserData newUser) throws DataAccessException {
+    var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+    executeUpdate(statement, newUser.username(), newUser.password(), newUser.email());
+    //return new UserData(newUser.username(), newUser.password(), newUser.email());
   }
 
   public void clear() {
-
+    var statement = "TRUNCATE user";
+    try {
+      executeUpdate(statement);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private UserData readUser(ResultSet rs) throws SQLException {
     return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+  }
+
+  private void executeUpdate(String statement, Object... params) throws DataAccessException {
+    try (var conn = DatabaseManager.getConnection()) {
+      try (var ps = conn.prepareStatement(statement)) {
+        for (var i = 0; i < params.length; i++) {
+          var param = params[i];
+          if (param instanceof String p) ps.setString(i + 1, p);
+          else if (param instanceof Integer p) ps.setInt(i + 1, p);
+          else if (param == null) ps.setNull(i + 1, NULL);
+        }
+        ps.executeUpdate();
+
+        /*var rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+          return rs.getInt(1);
+        }
+
+        return 0;*/
+      }
+    } catch (SQLException e) {
+      throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+    }
   }
 
 

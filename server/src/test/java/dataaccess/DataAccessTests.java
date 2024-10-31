@@ -8,12 +8,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class DataAccessTests {
-  private final DataAccess access = new MemoryDataAccess();
+  private final DataAccess access = new UserDatabaseAccess();
   private final AuthDataAccess authAccess = new AuthMemoryDataAccess();
   private final GameDataAccess gameAccess = new GameMemoryDataAccess();
 
+  public DataAccessTests() throws DataAccessException {
+  }
+
   @Test
-  public void addUser() {
+  public void addUser() throws DataAccessException {
+    access.clear();
     UserData user = new UserData("name", "password", "email");
     access.addUser(user);
     Assertions.assertEquals(user, access.getUser("name"));

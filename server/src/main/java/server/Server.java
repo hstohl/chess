@@ -126,7 +126,7 @@ public class Server {
       var joinGameReq = serializer.fromJson(req.body(), JoinGameRequest.class);
       var result = service.joinGame(req.headers("Authorization"), joinGameReq);
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: bad request")) {
         res.status(400);
         return errorHandler(e);

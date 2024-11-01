@@ -91,7 +91,7 @@ public class DataAccessTests {
   }
 
   @Test
-  public void updateGame() {
+  public void updateGame() throws DataAccessException {
     GameData game = new GameData(1234, "whitey", "", "bigname", new ChessGame());
     GameData newGame = new GameData(1234, "whitey", "Blacky", "bigname", new ChessGame());
     gameAccess.addGame(game);
@@ -101,7 +101,7 @@ public class DataAccessTests {
   }
 
   @Test
-  public void updateGameColorTaken() {
+  public void updateGameColorTaken() throws DataAccessException {
     GameData game = new GameData(1234, "whitey", "RealBlacky", "bigname", new ChessGame());
     GameData newGame = new GameData(1234, "whitey", "Blacky", "bigname", new ChessGame());
     gameAccess.addGame(game);

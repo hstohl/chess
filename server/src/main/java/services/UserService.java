@@ -118,7 +118,7 @@ public class UserService {
     return new NewGameResult(newGame.gameID());
   }
 
-  public SuccessResponse joinGame(String token, JoinGameRequest req) throws ServiceException {
+  public SuccessResponse joinGame(String token, JoinGameRequest req) throws ServiceException, DataAccessException {
     AuthData authData = authDataAccess.getAuthT(token);
     if (authData == null) {
       throw new ServiceException("Error: unauthorized");

@@ -62,8 +62,12 @@ public class GameDatabaseAccess implements GameDataAccess {
     return null;
   }
 
-  public void updateGame(GameData updatedGame) {
-
+  public void updateGame(GameData updatedGame) throws DataAccessException {
+    var statement1 = "DELETE FROM game WHERE gameID=?";
+    var statement2 = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?, ?)";
+    executeUpdate(statement1, updatedGame.gameID());
+    executeUpdate(statement2, updatedGame.gameID(), updatedGame.whiteUsername(), updatedGame.blackUsername(),
+            updatedGame.gameName(), serializer.toJson(updatedGame.game()));
   }
 
   public Collection<GameDataMini> listGames() throws DataAccessException {

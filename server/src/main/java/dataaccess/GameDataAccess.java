@@ -15,7 +15,7 @@ public interface GameDataAccess {
 
   public GameData getGameI(int id);
 
-  public void updateGame(GameData updatedGame);
+  public void updateGame(GameData updatedGame) throws DataAccessException;
 
   public Collection<GameDataMini> listGames() throws DataAccessException;
 

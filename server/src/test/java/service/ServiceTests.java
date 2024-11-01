@@ -189,7 +189,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void joinGame() throws ServiceException {
+  public void joinGame() throws ServiceException, DataAccessException {
     service.clear();
     GameData newGame = new GameData(1234, null,
             null, "My Named Game", new ChessGame());
@@ -215,7 +215,7 @@ public class ServiceTests {
 
     try {
       service.joinGame("h", joinGame);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: unauthorized", e.getMessage());
       Assertions.assertNull(gameDataAccess.getGame("My Named Game").whiteUsername());
     }
@@ -233,7 +233,7 @@ public class ServiceTests {
 
     try {
       service.joinGame("g", joinGame);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: bad request", e.getMessage());
       Assertions.assertNull(gameDataAccess.getGame("My Named Game").whiteUsername());
     }
@@ -251,7 +251,7 @@ public class ServiceTests {
 
     try {
       service.joinGame("g", joinGame);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: already taken", e.getMessage());
       Assertions.assertNotEquals("New User",
               gameDataAccess.getGame("My Named Game").whiteUsername());
@@ -270,7 +270,7 @@ public class ServiceTests {
 
     try {
       service.joinGame("g", joinGame);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: already taken", e.getMessage());
       Assertions.assertNotEquals("New User",
               gameDataAccess.getGame("My Named Game").blackUsername());

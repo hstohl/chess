@@ -36,10 +36,6 @@ public class AuthMemoryDataAccess implements AuthDataAccess {
     myAuthData.remove(auth);
   }
 
-  public void removeAuthByUsername(String username) {
-
-  }
-
   public void clear() {
     myAuthData.clear();
   }

@@ -12,7 +12,5 @@ public interface AuthDataAccess {
 
   public void removeAuth(AuthData auth) throws DataAccessException;
 
-  public void removeAuthByUsername(String username) throws DataAccessException;
-
   public void clear();
 }

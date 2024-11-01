@@ -59,11 +59,6 @@ public class AuthDatabaseAccess implements AuthDataAccess {
     executeUpdate(statement, auth.authToken());
   }
 
-  public void removeAuthByUsername(String username) throws DataAccessException {
-    var statement = "DELETE FROM auth WHERE username=?";
-    executeUpdate(statement, username);
-  }
-
   public void clear() {
     var statement = "TRUNCATE auth";
     try {
@@ -82,9 +77,13 @@ public class AuthDatabaseAccess implements AuthDataAccess {
       try (var ps = conn.prepareStatement(statement)) {
         for (var i = 0; i < params.length; i++) {
           var param = params[i];
-          if (param instanceof String p) ps.setString(i + 1, p);
-          else if (param instanceof Integer p) ps.setInt(i + 1, p);
-          else if (param == null) ps.setNull(i + 1, NULL);
+          switch (param) {
+            case String p -> ps.setString(i + 1, p);
+            case Integer p -> ps.setInt(i + 1, p);
+            case null -> ps.setNull(i + 1, NULL);
+            default -> {
+            }
+          }
         }
         ps.executeUpdate();
 

@@ -15,11 +15,21 @@ public class DataAccessTests {
 
 
   @Test
-  public void addAndGetUser() throws DataAccessException {
+  public void addUser() throws DataAccessException {
     access.clear();
     UserData user = new UserData("name", "password", "email");
     access.addUser(user);
     Assertions.assertEquals(user, access.getUser("name"));
+  }
+
+  @Test
+  public void getUser() throws DataAccessException {
+    access.clear();
+    UserData user = new UserData("name", "password", "email");
+    access.addUser(user);
+    Assertions.assertEquals(user.username(), access.getUser("name").username());
+    Assertions.assertEquals(user.password(), access.getUser("name").password());
+    Assertions.assertEquals(user.email(), access.getUser("name").email());
   }
 
   @Test
@@ -43,11 +53,20 @@ public class DataAccessTests {
 
 
   @Test
-  public void addAndGetAuth() throws DataAccessException {
+  public void addAuth() throws DataAccessException {
     authAccess.clear();
     AuthData auth = new AuthData("askdhks", "username");
     authAccess.addAuth(auth);
     Assertions.assertEquals("askdhks", authAccess.getAuth("username").authToken());
+  }
+
+  @Test
+  public void getAuth() throws DataAccessException {
+    authAccess.clear();
+    AuthData auth = new AuthData("askdhks", "username");
+    authAccess.addAuth(auth);
+    Assertions.assertEquals(auth.authToken(), authAccess.getAuth("username").authToken());
+    Assertions.assertEquals(auth.username(), authAccess.getAuth("username").username());
   }
 
   @Test
@@ -110,11 +129,35 @@ public class DataAccessTests {
   }
 
   @Test
-  public void addAndGetGame() throws DataAccessException {
+  public void addGame() throws DataAccessException {
     gameAccess.clear();
     GameData game = new GameData(2002, "whiteplayer", "blackplayer", "name66", new ChessGame());
     gameAccess.addGame(game);
     Assertions.assertEquals(game.game().getBoard(), gameAccess.getGame("name66").game().getBoard());
+    Assertions.assertEquals(game.game().getBoard(), gameAccess.getGameI(2002).game().getBoard());
+  }
+
+  @Test
+  public void getGame() throws DataAccessException {
+    gameAccess.clear();
+    GameData game = new GameData(2002, "whiteplayer", "blackplayer", "name66", new ChessGame());
+    gameAccess.addGame(game);
+    Assertions.assertEquals(game.gameID(), gameAccess.getGame("name66").gameID());
+    Assertions.assertEquals(game.whiteUsername(), gameAccess.getGame("name66").whiteUsername());
+    Assertions.assertEquals(game.blackUsername(), gameAccess.getGame("name66").blackUsername());
+    Assertions.assertEquals(game.gameName(), gameAccess.getGame("name66").gameName());
+    Assertions.assertEquals(game.game().getBoard(), gameAccess.getGame("name66").game().getBoard());
+  }
+
+  @Test
+  public void getGameI() throws DataAccessException {
+    gameAccess.clear();
+    GameData game = new GameData(2002, "whiteplayer", "blackplayer", "name66", new ChessGame());
+    gameAccess.addGame(game);
+    Assertions.assertEquals(game.gameID(), gameAccess.getGameI(2002).gameID());
+    Assertions.assertEquals(game.whiteUsername(), gameAccess.getGameI(2002).whiteUsername());
+    Assertions.assertEquals(game.blackUsername(), gameAccess.getGameI(2002).blackUsername());
+    Assertions.assertEquals(game.gameName(), gameAccess.getGameI(2002).gameName());
     Assertions.assertEquals(game.game().getBoard(), gameAccess.getGameI(2002).game().getBoard());
   }
 

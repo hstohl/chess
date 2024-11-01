@@ -151,7 +151,7 @@ public class UserService {
     return new SuccessResponse();
   }
 
-  public GameList listGames(String token) throws ServiceException {
+  public GameList listGames(String token) throws ServiceException, DataAccessException {
     AuthData authData = authDataAccess.getAuthT(token);
 
     if (authData == null) {

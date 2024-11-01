@@ -96,10 +96,10 @@ public class Server {
     try {
       var result = service.listGames(req.headers("Authorization"));
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
-      } else {
+      } else if (e.getClass() == DataAccessException.class) {
         res.status(500);
       }
       return errorHandler(e);
@@ -143,7 +143,7 @@ public class Server {
     }
   }
 
-  private String errorHandler(ServiceException e) {
+  private String errorHandler(Exception e) {
     var errorResponse = Map.of("message", e.getMessage());
     return serializer.toJson(errorResponse);
   }

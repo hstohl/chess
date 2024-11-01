@@ -17,7 +17,7 @@ public interface GameDataAccess {
 
   public void updateGame(GameData updatedGame);
 
-  public Collection<GameDataMini> listGames();
+  public Collection<GameDataMini> listGames() throws DataAccessException;
 
   public void clear();
 }

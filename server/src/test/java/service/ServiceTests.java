@@ -278,7 +278,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void listGames() throws ServiceException {
+  public void listGames() throws ServiceException, DataAccessException {
     service.clear();
     authDataAccess.addAuth(new AuthData("g", "New User"));
 
@@ -307,7 +307,7 @@ public class ServiceTests {
 
     try {
       service.listGames("hjhvugc");
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: unauthorized", e.getMessage());
     }
   }

@@ -2,10 +2,8 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 import model.GameDataMini;
-import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +22,7 @@ public class GameDatabaseAccess implements GameDataAccess {
         ps.setString(1, gameName);
         try (var rs = ps.executeQuery()) {
           if (rs.next()) {
-            return readUser(rs);
+            return readGame(rs);
           }
         }
       }
@@ -53,7 +51,7 @@ public class GameDatabaseAccess implements GameDataAccess {
         ps.setInt(1, id);
         try (var rs = ps.executeQuery()) {
           if (rs.next()) {
-            return readUser(rs);
+            return readGame(rs);
           }
         }
       }
@@ -68,9 +66,21 @@ public class GameDatabaseAccess implements GameDataAccess {
 
   }
 
-  public Collection<GameDataMini> listGames() {
-
-    return new ArrayList<>();
+  public Collection<GameDataMini> listGames() throws DataAccessException {
+    var result = new ArrayList<GameDataMini>();
+    try (var conn = DatabaseManager.getConnection()) {
+      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM game";
+      try (var ps = conn.prepareStatement(statement)) {
+        try (var rs = ps.executeQuery()) {
+          while (rs.next()) {
+            result.add(readSmallGame(rs));
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+    }
+    return result;
   }
 
   public void clear() {
@@ -82,10 +92,15 @@ public class GameDatabaseAccess implements GameDataAccess {
     }
   }
 
-  private GameData readUser(ResultSet rs) throws SQLException {
+  private GameData readGame(ResultSet rs) throws SQLException {
     ChessGame game = serializer.fromJson(rs.getString("chessGame"), ChessGame.class);
     return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"),
             rs.getString("gameName"), game);
+  }
+
+  private GameDataMini readSmallGame(ResultSet rs) throws SQLException {
+    return new GameDataMini(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"),
+            rs.getString("gameName"));
   }
 
   private void executeUpdate(String statement, Object... params) throws DataAccessException {

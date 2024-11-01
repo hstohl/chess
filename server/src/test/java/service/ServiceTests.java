@@ -11,10 +11,13 @@ import services.UserService;
 
 public class ServiceTests {
 
-  private final DataAccess dataAccess = new MemoryDataAccess();
-  private final AuthDataAccess authDataAccess = new AuthMemoryDataAccess();
-  private final GameDataAccess gameDataAccess = new GameMemoryDataAccess();
+  private final DataAccess dataAccess = new UserDatabaseAccess();
+  private final AuthDataAccess authDataAccess = new AuthDatabaseAccess();
+  private final GameDataAccess gameDataAccess = new GameDatabaseAccess();
   UserService service = new UserService(dataAccess, authDataAccess, gameDataAccess);
+
+  public ServiceTests() throws DataAccessException {
+  }
 
   @Test
   public void clearTest() {

@@ -80,8 +80,8 @@ public class UserDatabaseAccess implements DataAccess {
           """
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
               `gameName` varchar(45) NOT NULL,
               `chessGame` TEXT DEFAULT NULL,
               PRIMARY KEY (`gameID`)

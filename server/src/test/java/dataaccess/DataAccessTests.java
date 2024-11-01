@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class DataAccessTests {
   private final DataAccess access = new UserDatabaseAccess();
-  private final AuthDataAccess authAccess = new AuthMemoryDataAccess();
+  private final AuthDataAccess authAccess = new AuthDatabaseAccess();
   private final GameDataAccess gameAccess = new GameMemoryDataAccess();
 
   public DataAccessTests() throws DataAccessException {
@@ -25,6 +25,7 @@ public class DataAccessTests {
 
   @Test
   public void addAuth() {
+    authAccess.clear();
     AuthData auth = new AuthData("askdhks", "username");
     authAccess.addAuth(auth);
     Assertions.assertEquals("askdhks", authAccess.getAuth("username").authToken());
@@ -32,9 +33,18 @@ public class DataAccessTests {
 
   @Test
   public void getAuthT() {
-    AuthData auth = new AuthData("askdhks", "username");
+    AuthData auth = new AuthData("askdhksd", "username23");
     authAccess.addAuth(auth);
-    Assertions.assertEquals("username", authAccess.getAuthT("askdhks").username());
+    Assertions.assertEquals("username23", authAccess.getAuthT("askdhksd").username());
+  }
+
+  @Test
+  public void removeAuth() {
+    AuthData auth = new AuthData("askdh", "username27");
+    authAccess.addAuth(auth);
+    Assertions.assertEquals("username27", authAccess.getAuthT("askdh").username());
+    authAccess.removeAuth(auth);
+    Assertions.assertNull(authAccess.getAuthT("askdh"));
   }
 
   @Test

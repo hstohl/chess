@@ -78,6 +78,14 @@ public class UserDatabaseAccess implements DataAccess {
 
   private final String[] createStatements = {
           """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`username`),
+              UNIQUE KEY `username_UNIQUE` (`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+          """
             CREATE TABLE IF NOT EXISTS  user (
               `username` varchar(256) NOT NULL,
               `password` varchar(4096) NOT NULL,

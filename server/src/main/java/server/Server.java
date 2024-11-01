@@ -111,7 +111,7 @@ public class Server {
       var gameName = serializer.fromJson(req.body(), NewGameRequest.class);
       var result = service.createGame(gameName, req.headers("Authorization"));
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {

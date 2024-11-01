@@ -34,15 +34,11 @@ public class GameDatabaseAccess implements GameDataAccess {
     return null;
   }
 
-  public void addGame(GameData newGame) {
+  public void addGame(GameData newGame) throws DataAccessException {
     var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?, ?)";
 
-    try {
-      executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(),
-              newGame.gameName(), serializer.toJson(newGame.game()));
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(),
+            newGame.gameName(), serializer.toJson(newGame.game()));
   }
 
   public GameData getGameI(int id) {

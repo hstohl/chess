@@ -102,7 +102,7 @@ public class UserService {
     return new SuccessResponse();
   }
 
-  public NewGameResult createGame(NewGameRequest newGameN, String token) throws ServiceException {
+  public NewGameResult createGame(NewGameRequest newGameN, String token) throws ServiceException, DataAccessException {
     //System.out.println("Token used in Create Game: " + token);
     AuthData authData = authDataAccess.getAuthT(token);
 

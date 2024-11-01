@@ -11,7 +11,7 @@ import java.util.Collection;
 public interface GameDataAccess {
   public GameData getGame(String gameName);
 
-  public void addGame(GameData newGame);
+  public void addGame(GameData newGame) throws DataAccessException;
 
   public GameData getGameI(int id);
 

@@ -13,11 +13,9 @@ public class DataAccessTests {
   private final GameDataAccess gameAccess = new GameDatabaseAccess();
   private final GameDataAccess gameAccessMem = new GameMemoryDataAccess();
 
-  public DataAccessTests() throws DataAccessException {
-  }
 
   @Test
-  public void addUser() throws DataAccessException {
+  public void addAndGetUser() throws DataAccessException {
     access.clear();
     UserData user = new UserData("name", "password", "email");
     access.addUser(user);
@@ -25,7 +23,27 @@ public class DataAccessTests {
   }
 
   @Test
-  public void addAuth() throws DataAccessException {
+  public void getUserNotThere() throws DataAccessException {
+    access.clear();
+    UserData user = new UserData("name", "password", "email");
+    access.addUser(user);
+    Assertions.assertNull(access.getUser("username"));
+  }
+
+  @Test
+  public void addUserBad() {
+    access.clear();
+    UserData user = new UserData("name", null, "email");
+    try {
+      access.addUser(user);
+    } catch (Exception e) {
+      Assertions.assertTrue(e.getMessage().contains("unable to update database:"));
+    }
+  }
+
+
+  @Test
+  public void addAndGetAuth() throws DataAccessException {
     authAccess.clear();
     AuthData auth = new AuthData("askdhks", "username");
     authAccess.addAuth(auth);
@@ -33,14 +51,43 @@ public class DataAccessTests {
   }
 
   @Test
+  public void getAuthNotThere() throws DataAccessException {
+    authAccess.clear();
+    AuthData auth = new AuthData("askdhks", "username");
+    authAccess.addAuth(auth);
+    Assertions.assertNull(authAccess.getAuth("name"));
+  }
+
+  @Test
+  public void addAuthBad() {
+    authAccess.clear();
+    AuthData auth = new AuthData(null, "username");
+    try {
+      authAccess.addAuth(auth);
+    } catch (Exception e) {
+      Assertions.assertTrue(e.getMessage().contains("unable to update database:"));
+    }
+  }
+
+  @Test
   public void getAuthT() throws DataAccessException {
+    authAccess.clear();
     AuthData auth = new AuthData("askdhksd", "username23");
     authAccess.addAuth(auth);
     Assertions.assertEquals("username23", authAccess.getAuthT("askdhksd").username());
   }
 
   @Test
+  public void getAuthTNotThere() throws DataAccessException {
+    authAccess.clear();
+    AuthData auth = new AuthData("askdhksd", "username23");
+    authAccess.addAuth(auth);
+    Assertions.assertNull(authAccess.getAuthT("lxns;ps"));
+  }
+
+  @Test
   public void removeAuth() throws DataAccessException {
+    authAccess.clear();
     AuthData auth = new AuthData("askdh", "username27");
     authAccess.addAuth(auth);
     Assertions.assertEquals("username27", authAccess.getAuthT("askdh").username());
@@ -49,12 +96,47 @@ public class DataAccessTests {
   }
 
   @Test
-  public void addGame() {
+  public void removeAuthNotThere() throws DataAccessException {
+    authAccess.clear();
+    AuthData auth = new AuthData("askdh", "username27");
+    AuthData authFake = new AuthData("bb890", "myName");
+    authAccess.addAuth(auth);
+    Assertions.assertEquals("username27", authAccess.getAuthT("askdh").username());
+    try {
+      authAccess.removeAuth(authFake);
+    } catch (DataAccessException e) {
+      Assertions.assertTrue(e.getMessage().contains("unable to update database:"));
+    }
+  }
+
+  @Test
+  public void addAndGetGame() throws DataAccessException {
     gameAccess.clear();
     GameData game = new GameData(2002, "whiteplayer", "blackplayer", "name66", new ChessGame());
     gameAccess.addGame(game);
     Assertions.assertEquals(game.game().getBoard(), gameAccess.getGame("name66").game().getBoard());
     Assertions.assertEquals(game.game().getBoard(), gameAccess.getGameI(2002).game().getBoard());
+  }
+
+  @Test
+  public void getGameNotThere() throws DataAccessException {
+    gameAccess.clear();
+    GameData game = new GameData(2002, "whiteplayer", "blackplayer", "name66", new ChessGame());
+    gameAccess.addGame(game);
+    Assertions.assertNull(gameAccess.getGame("name400"));
+    Assertions.assertNull(gameAccess.getGameI(2008));
+  }
+
+
+  @Test
+  public void addGameBad() {
+    gameAccess.clear();
+    GameData game = new GameData(2002, "whiteplayer", "blackplayer", null, new ChessGame());
+    try {
+      gameAccess.addGame(game);
+    } catch (DataAccessException e) {
+      Assertions.assertTrue(e.getMessage().contains("unable to update database:"));
+    }
   }
 
   @Test
@@ -92,6 +174,7 @@ public class DataAccessTests {
 
   @Test
   public void updateGame() throws DataAccessException {
+    gameAccess.clear();
     GameData game = new GameData(1234, "whitey", "", "bigname", new ChessGame());
     GameData newGame = new GameData(1234, "whitey", "Blacky", "bigname", new ChessGame());
     gameAccess.addGame(game);
@@ -101,12 +184,16 @@ public class DataAccessTests {
   }
 
   @Test
-  public void updateGameColorTaken() throws DataAccessException {
+  public void updateGameBad() throws DataAccessException {
+    gameAccess.clear();
     GameData game = new GameData(1234, "whitey", "RealBlacky", "bigname", new ChessGame());
-    GameData newGame = new GameData(1234, "whitey", "Blacky", "bigname", new ChessGame());
+    GameData newGame = new GameData(1234, "whitey", "Blacky", null, new ChessGame());
     gameAccess.addGame(game);
 
-    gameAccess.updateGame(newGame);
-    Assertions.assertEquals("Blacky", gameAccess.getGameI(1234).blackUsername());
+    try {
+      gameAccess.updateGame(newGame);
+    } catch (DataAccessException e) {
+      Assertions.assertTrue(e.getMessage().contains("unable to update database:"));
+    }
   }
 }

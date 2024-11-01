@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class DataAccessTests {
   private final DataAccess access = new UserDatabaseAccess();
   private final AuthDataAccess authAccess = new AuthDatabaseAccess();
-  private final GameDataAccess gameAccess = new GameMemoryDataAccess();
+  private final GameDataAccess gameAccess = new GameDatabaseAccess();
 
   public DataAccessTests() throws DataAccessException {
   }
@@ -45,6 +45,15 @@ public class DataAccessTests {
     Assertions.assertEquals("username27", authAccess.getAuthT("askdh").username());
     authAccess.removeAuth(auth);
     Assertions.assertNull(authAccess.getAuthT("askdh"));
+  }
+
+  @Test
+  public void addGame() {
+    gameAccess.clear();
+    GameData game = new GameData(2002, "whiteman", "blackman", "name66", new ChessGame());
+    gameAccess.addGame(game);
+    Assertions.assertEquals(game.game().getBoard(), gameAccess.getGame("name66").game().getBoard());
+    Assertions.assertEquals(game.game().getBoard(), gameAccess.getGameI(2002).game().getBoard());
   }
 
   @Test

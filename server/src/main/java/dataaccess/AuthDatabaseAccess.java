@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,13 +20,11 @@ public class AuthDatabaseAccess implements AuthDataAccess {
         ps.setString(1, username);
         try (var rs = ps.executeQuery()) {
           if (rs.next()) {
-            return readUser(rs);
+            return readAuth(rs);
           }
         }
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    } catch (DataAccessException e) {
+    } catch (SQLException | DataAccessException e) {
       throw new RuntimeException(e);
     }
 
@@ -41,13 +38,11 @@ public class AuthDatabaseAccess implements AuthDataAccess {
         ps.setString(1, auth);
         try (var rs = ps.executeQuery()) {
           if (rs.next()) {
-            return readUser(rs);
+            return readAuth(rs);
           }
         }
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    } catch (DataAccessException e) {
+    } catch (SQLException | DataAccessException e) {
       throw new RuntimeException(e);
     }
 
@@ -81,7 +76,7 @@ public class AuthDatabaseAccess implements AuthDataAccess {
     }
   }
 
-  private AuthData readUser(ResultSet rs) throws SQLException {
+  private AuthData readAuth(ResultSet rs) throws SQLException {
     return new AuthData(rs.getString("authToken"), rs.getString("username"));
   }
 

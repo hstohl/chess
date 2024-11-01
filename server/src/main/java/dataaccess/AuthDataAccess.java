@@ -8,9 +8,11 @@ public interface AuthDataAccess {
 
   public AuthData getAuthT(String auth);
 
-  public void addAuth(AuthData newAuth);
+  public void addAuth(AuthData newAuth) throws DataAccessException;
 
-  public void removeAuth(AuthData auth);
+  public void removeAuth(AuthData auth) throws DataAccessException;
+
+  public void removeAuthByUsername(String username) throws DataAccessException;
 
   public void clear();
 }

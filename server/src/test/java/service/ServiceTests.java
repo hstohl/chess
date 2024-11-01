@@ -6,6 +6,7 @@ import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 import services.UserService;
 
 
@@ -20,7 +21,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void clearTest() {
+  public void clearTest() throws DataAccessException {
     try {
       dataAccess.addUser(new UserData("u", "p", "e"));
     } catch (DataAccessException e) {
@@ -36,14 +37,14 @@ public class ServiceTests {
   }
 
   @Test
-  public void registerTest() throws ServiceException {
+  public void registerTest() throws ServiceException, DataAccessException {
     service.clear();
     service.registerUser(new UserData("u", "p", "e"));
-    Assertions.assertEquals("p", dataAccess.getUser("u").password());
+    Assertions.assertTrue(BCrypt.checkpw("p", dataAccess.getUser("u").password()));
   }
 
   @Test
-  public void registerFailTest() throws ServiceException {
+  public void registerFailTest() throws ServiceException, DataAccessException {
     service.clear();
     UserData try1 = new UserData("copy", "p", "e");
     UserData try2 = new UserData("copy", "p", "e");
@@ -64,41 +65,34 @@ public class ServiceTests {
 
     try {
       service.registerUser(try3);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: bad request", e.getMessage());
     }
   }
 
   @Test
-  public void authTest() {
+  public void authTest() throws DataAccessException {
     service.clear();
-    authDataAccess.addAuth(service.newAuth("u"));
+
+    authDataAccess.addAuth(new AuthData(service.newAuth(), "u"));
     Assertions.assertNotNull(authDataAccess.getAuth("u"));
   }
 
   @Test
-  public void loginTest() throws ServiceException {
+  public void loginTest() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    service.registerUser(user1);
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
     Assertions.assertNotNull(authDataAccess.getAuth("u"));
   }
 
   @Test
-  public void loginTestFail1() {
+  public void loginTestFail1() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    service.registerUser(user1);
     UserData loginReq = new UserData("u", "pas", "e");
     try {
       service.login(loginReq);
@@ -113,35 +107,25 @@ public class ServiceTests {
     UserData loginReq = new UserData("u", "pas", "e");
     try {
       service.login(loginReq);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       Assertions.assertEquals("Error: unauthorized", e.getMessage());
     }
   }
 
   @Test
-  public void logoutTest() throws ServiceException {
+  public void logoutTest() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
-    UserData loginReq = new UserData("u", "p", "e");
-    service.login(loginReq);
+    service.registerUser(user1);
     service.logout(authDataAccess.getAuth("u").authToken());
     Assertions.assertNull(authDataAccess.getAuth("u"));
   }
 
   @Test
-  public void logoutTestFail() {
+  public void logoutTestFail() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    service.registerUser(user1);
     UserData loginReq = new UserData("u", "p", "e");
     try {
       service.login(loginReq);
@@ -153,14 +137,10 @@ public class ServiceTests {
   }
 
   @Test
-  public void createGame() throws ServiceException {
+  public void createGame() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    service.registerUser(user1);
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
 
@@ -172,14 +152,10 @@ public class ServiceTests {
   }
 
   @Test
-  public void createGameFail() throws ServiceException {
+  public void createGameFail() throws ServiceException, DataAccessException {
     service.clear();
     UserData user1 = new UserData("u", "p", "e");
-    try {
-      dataAccess.addUser(user1);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    service.registerUser(user1);
     UserData loginReq = new UserData("u", "p", "e");
     service.login(loginReq);
 
@@ -207,7 +183,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void joinGameFail1() {
+  public void joinGameFail1() throws DataAccessException {
     service.clear();
     GameData newGame = new GameData(1234, null,
             null, "My Named Game", new ChessGame());
@@ -225,7 +201,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void joinGameFail2() {
+  public void joinGameFail2() throws DataAccessException {
     service.clear();
     GameData newGame = new GameData(1234, null,
             null, "My Named Game", new ChessGame());
@@ -243,7 +219,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void joinGameFail3() {
+  public void joinGameFail3() throws DataAccessException {
     service.clear();
     GameData newGame = new GameData(1234, "o",
             null, "My Named Game", new ChessGame());
@@ -262,7 +238,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void joinGameFail4() {
+  public void joinGameFail4() throws DataAccessException {
     service.clear();
     GameData newGame = new GameData(1234, null,
             "b", "My Named Game", new ChessGame());
@@ -297,7 +273,7 @@ public class ServiceTests {
   }
 
   @Test
-  public void listGamesFail() {
+  public void listGamesFail() throws DataAccessException {
     service.clear();
     authDataAccess.addAuth(new AuthData("g", "New User"));
 

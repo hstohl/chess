@@ -25,7 +25,7 @@ public class DataAccessTests {
   }
 
   @Test
-  public void addAuth() {
+  public void addAuth() throws DataAccessException {
     authAccess.clear();
     AuthData auth = new AuthData("askdhks", "username");
     authAccess.addAuth(auth);
@@ -33,14 +33,14 @@ public class DataAccessTests {
   }
 
   @Test
-  public void getAuthT() {
+  public void getAuthT() throws DataAccessException {
     AuthData auth = new AuthData("askdhksd", "username23");
     authAccess.addAuth(auth);
     Assertions.assertEquals("username23", authAccess.getAuthT("askdhksd").username());
   }
 
   @Test
-  public void removeAuth() {
+  public void removeAuth() throws DataAccessException {
     AuthData auth = new AuthData("askdh", "username27");
     authAccess.addAuth(auth);
     Assertions.assertEquals("username27", authAccess.getAuthT("askdh").username());

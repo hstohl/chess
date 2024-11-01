@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Server {
-  private final DataAccess dataAccess = new MemoryDataAccess();
-  private final AuthDataAccess authDataAccess = new AuthMemoryDataAccess();
-  private final GameDataAccess gameDataAccess = new GameMemoryDataAccess();
+  private final DataAccess dataAccess = new UserDatabaseAccess();
+  private final AuthDataAccess authDataAccess = new AuthDatabaseAccess();
+  private final GameDataAccess gameDataAccess = new GameDatabaseAccess();
   private final UserService service = new UserService(dataAccess, authDataAccess, gameDataAccess);
   private final Gson serializer = new Gson();
 
@@ -43,7 +43,7 @@ public class Server {
       var newUser = serializer.fromJson(req.body(), UserData.class);
       var result = service.registerUser(newUser);
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: already taken")) {
         res.status(403);
         return errorHandler(e);
@@ -67,7 +67,7 @@ public class Server {
       var user = serializer.fromJson(req.body(), UserData.class);
       var result = service.login(user);
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {
@@ -82,7 +82,7 @@ public class Server {
       var auth = req.headers("Authorization");
       var result = service.logout(auth);
       return serializer.toJson(result);
-    } catch (ServiceException e) {
+    } catch (ServiceException | DataAccessException e) {
       if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
         res.status(401);
       } else {

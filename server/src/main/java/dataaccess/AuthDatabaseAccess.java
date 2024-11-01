@@ -15,7 +15,7 @@ public class AuthDatabaseAccess implements AuthDataAccess {
 
   public AuthData getAuth(String username) {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT authToken, username FROM auth WHERE username = ?";
+      var statement = "SELECT authToken, username FROM auth WHERE username = ? ORDER BY created_at DESC LIMIT 1";
       try (var ps = conn.prepareStatement(statement)) {
         ps.setString(1, username);
         try (var rs = ps.executeQuery()) {
@@ -49,22 +49,19 @@ public class AuthDatabaseAccess implements AuthDataAccess {
     return null;
   }
 
-  public void addAuth(AuthData newAuth) {
+  public void addAuth(AuthData newAuth) throws DataAccessException {
     var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
-    try {
-      executeUpdate(statement, newAuth.authToken(), newAuth.username());
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    executeUpdate(statement, newAuth.authToken(), newAuth.username());
   }
 
-  public void removeAuth(AuthData auth) {
+  public void removeAuth(AuthData auth) throws DataAccessException {
     var statement = "DELETE FROM auth WHERE authToken=?";
-    try {
-      executeUpdate(statement, auth.authToken());
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    executeUpdate(statement, auth.authToken());
+  }
+
+  public void removeAuthByUsername(String username) throws DataAccessException {
+    var statement = "DELETE FROM auth WHERE username=?";
+    executeUpdate(statement, username);
   }
 
   public void clear() {

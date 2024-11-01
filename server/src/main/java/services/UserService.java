@@ -4,9 +4,11 @@ import chess.ChessGame;
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
@@ -29,7 +31,7 @@ public class UserService {
     return new SuccessResponse();
   }
 
-  public AuthData registerUser(UserData newUser) throws ServiceException {
+  public AuthData registerUser(UserData newUser) throws ServiceException, DataAccessException {
     if (dataAccess.getUser(newUser.username()) != null) {
       throw new ServiceException("Error: already taken");
     }
@@ -38,20 +40,20 @@ public class UserService {
       throw new ServiceException("Error: bad request");
     }
 
-    try {
-      dataAccess.addUser(newUser);
-    } catch (DataAccessException e) {
-      throw new RuntimeException(e);
-    }
+    UserData realNewUser = new UserData(newUser.username(), BCrypt.hashpw(newUser.password(), BCrypt.gensalt()), newUser.email());
+    dataAccess.addUser(realNewUser);
 
-    AuthData auth = newAuth(newUser.username());
+    //AuthData auth = newAuth(newUser.username());
+    AuthData auth = new AuthData(newAuth(), newUser.username());
     authDataAccess.addAuth(auth);
+
+    //System.out.println("Auth token from register: " + authDataAccess.getAuth(newUser.username()).authToken());
 
     return authDataAccess.getAuth(newUser.username());
   }
 
-  public AuthData newAuth(String username) { //40 to 122
-    Random rnd = new Random();
+  public String newAuth() { //40 to 122
+    /*Random rnd = new Random();
     StringBuilder authToken = new StringBuilder();
     boolean unique = false;
     while (!unique) {
@@ -64,27 +66,32 @@ public class UserService {
         unique = true;
       }
     }
-
-    return new AuthData(authToken.toString(), username);
+    //System.out.println("Generating New Auth..." + authToken);
+    */
+    //String auth = UUID.randomUUID().toString();
+    return UUID.randomUUID().toString();
+    //return new AuthData(auth, username);
   }
 
-  public AuthData login(UserData user) throws ServiceException {
+  public AuthData login(UserData user) throws ServiceException, DataAccessException {
     UserData realUser = dataAccess.getUser(user.username());
 
     if (dataAccess.getUser(user.username()) == null) {
       throw new ServiceException("Error: unauthorized");
     }
-    if (!Objects.equals(realUser.password(), user.password())) {
+    if (!BCrypt.checkpw(user.password(), realUser.password())) {
       throw new ServiceException("Error: unauthorized");
     }
 
-    AuthData auth = newAuth(user.username());
+
+    AuthData auth = new AuthData(newAuth(), user.username());
     authDataAccess.addAuth(auth);
+    //System.out.println("Auth token from a login: " + authDataAccess.getAuth(user.username()).authToken());
 
     return authDataAccess.getAuth(user.username());
   }
 
-  public SuccessResponse logout(String token) throws ServiceException {
+  public SuccessResponse logout(String token) throws ServiceException, DataAccessException {
     AuthData authData = authDataAccess.getAuthT(token);
 
     if (authData == null) {
@@ -96,6 +103,7 @@ public class UserService {
   }
 
   public NewGameResult createGame(NewGameRequest newGameN, String token) throws ServiceException {
+    //System.out.println("Token used in Create Game: " + token);
     AuthData authData = authDataAccess.getAuthT(token);
 
     if (authData == null) {

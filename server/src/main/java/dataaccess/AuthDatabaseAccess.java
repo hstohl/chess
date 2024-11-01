@@ -9,10 +9,6 @@ import static java.sql.Types.NULL;
 
 public class AuthDatabaseAccess implements AuthDataAccess {
 
-  /*public AuthDatabaseAccess() throws DataAccessException {
-    configureDatabase();
-  }*/
-
   public AuthData getAuth(String username) {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "SELECT authToken, username FROM auth WHERE username = ? ORDER BY created_at DESC LIMIT 1";
@@ -75,31 +71,4 @@ public class AuthDatabaseAccess implements AuthDataAccess {
   private void executeUpdate(String statement, Object... params) throws DataAccessException {
     DatabaseUtil.executeUpdate(statement, params);
   }
-
-
-  /*private final String[] createStatements = {
-          """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(4096) NOT NULL,
-              PRIMARY KEY (`username`),
-              UNIQUE KEY `username_UNIQUE` (`username`)
-            ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-  };
-
-  private void configureDatabase() throws DataAccessException {
-    try {
-      DatabaseManager.createDatabase();
-      try (var conn = DatabaseManager.getConnection()) {
-        for (var statement : createStatements) {
-          try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-          }
-        }
-      }
-    } catch (SQLException e) {
-      throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
-    }
-  }*/
 }

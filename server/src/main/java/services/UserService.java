@@ -52,25 +52,8 @@ public class UserService {
     return authDataAccess.getAuth(newUser.username());
   }
 
-  public String newAuth() { //40 to 122
-    /*Random rnd = new Random();
-    StringBuilder authToken = new StringBuilder();
-    boolean unique = false;
-    while (!unique) {
-      authToken = new StringBuilder();
-      for (int i = 0; i < 11; ++i) {
-        int rndAsciiValue = rnd.nextInt(89) + 33;
-        authToken.append((char) rndAsciiValue);
-      }
-      if (authDataAccess.getAuthT(authToken.toString()) == null) {
-        unique = true;
-      }
-    }
-    //System.out.println("Generating New Auth..." + authToken);
-    */
-    //String auth = UUID.randomUUID().toString();
+  public String newAuth() {
     return UUID.randomUUID().toString();
-    //return new AuthData(auth, username);
   }
 
   public AuthData login(UserData user) throws ServiceException, DataAccessException {

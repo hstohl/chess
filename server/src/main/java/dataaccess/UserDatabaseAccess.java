@@ -1,13 +1,9 @@
 package dataaccess;
 
-
 import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-
-import static java.sql.Types.NULL;
 
 
 public class UserDatabaseAccess implements DataAccess {

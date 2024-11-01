@@ -11,7 +11,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static java.sql.Types.NULL;
 
 public class GameDatabaseAccess implements GameDataAccess {
   private final Gson serializer = new Gson();

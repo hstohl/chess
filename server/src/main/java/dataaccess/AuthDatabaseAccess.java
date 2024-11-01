@@ -5,8 +5,6 @@ import model.AuthData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static java.sql.Types.NULL;
-
 public class AuthDatabaseAccess implements AuthDataAccess {
 
   public AuthData getAuth(String username) {

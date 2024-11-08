@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
-import model.AuthData;
-import model.UserData;
+import model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +17,38 @@ public class ServerFacade {
   }
 
   public AuthData register(UserData newUser) throws ResponseException {
-    var path = "/register";
+    var path = "/user";
     return this.makeRequest("POST", path, newUser, AuthData.class);
+  }
+
+  public SuccessResponse clear() throws ResponseException {
+    var path = "/db";
+    return this.makeRequest("DELETE", path, null, null);
+  }
+
+  public AuthData login(UserData user) throws ResponseException {
+    var path = "/session";
+    return this.makeRequest("POST", path, user, AuthData.class);
+  }
+
+  public SuccessResponse logout(String token) throws ResponseException {
+    var path = "/session";
+    return this.makeRequest("DELETE", path, token, null);
+  }
+
+  public NewGameResult createGame(NewGameRequest newGameN, String token) throws ResponseException { //TODO what about token?
+    var path = "/game";
+    return this.makeRequest("POST", path, newGameN, NewGameResult.class);
+  }
+
+  public SuccessResponse joinGame(String token, JoinGameRequest req) throws ResponseException { //TODO what about token?
+    var path = "/game";
+    return this.makeRequest("PUT", path, req, SuccessResponse.class);
+  }
+
+  public GameList listGames(String token) throws ResponseException {
+    var path = "/game";
+    return this.makeRequest("GET", path, token, GameList.class);
   }
 
 

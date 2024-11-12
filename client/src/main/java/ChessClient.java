@@ -77,7 +77,7 @@ public class ChessClient {
             character = " " + i + " ";
           }
           if ((i == 0 || i == 9) && j != 0 && j != 9) {
-            character = " " + Character.toString((char) 96 + j) + " ";
+            character = " " + Character.toString((char) 96 + 9 - j) + " ";
           }
         } else if (i % 2 == 1 && j % 2 == 1) {
           bgColor = SET_BG_COLOR_WHITE;
@@ -85,7 +85,24 @@ public class ChessClient {
           bgColor = SET_BG_COLOR_WHITE;
         }
 
+
+        //bgColor = SET_BG_COLOR_BLACK;
+        //character = SET_TEXT_COLOR_BLACK + EMPTY;
+        //string = string + "";
         //make board black
+        /*if (i == 0 || i == 9 || j == 0 || j == 9) {
+          bgColor = SET_BG_COLOR_LIGHT_GREY;
+          if ((j == 0 || j == 9) && i != 0 && i != 9) {
+            character = " " + (9 - i) + " ";
+          }
+          if ((i == 0 || i == 9) && j != 0 && j != 9) {
+            character = " " + Character.toString((char) 96 + j) + " ";
+          }
+        } else if (i % 2 == 1 && j % 2 == 1) {
+          bgColor = SET_BG_COLOR_WHITE;
+        } else if (i % 2 == 0 && j % 2 == 0) {
+          bgColor = SET_BG_COLOR_WHITE;
+        }*/
 
         //set pieces white
         //if ()
@@ -94,6 +111,33 @@ public class ChessClient {
         //set pieces black
 
 
+        string = string + bgColor + character;
+      }
+      string = string + SET_BG_COLOR_BLACK + "\n";
+    }
+
+    string = string + "\n\n\n";
+
+    //white board
+    for (int i = 0; i < 10; ++i) {
+      for (int j = 0; j < 10; ++j) {
+        bgColor = SET_BG_COLOR_BLACK;
+        character = SET_TEXT_COLOR_BLACK + EMPTY;
+        //string = string + "";
+        //make board black
+        if (i == 0 || i == 9 || j == 0 || j == 9) {
+          bgColor = SET_BG_COLOR_LIGHT_GREY;
+          if ((j == 0 || j == 9) && i != 0 && i != 9) {
+            character = " " + (9 - i) + " ";
+          }
+          if ((i == 0 || i == 9) && j != 0 && j != 9) {
+            character = " " + Character.toString((char) 96 + j) + " ";
+          }
+        } else if (i % 2 == 1 && j % 2 == 1) {
+          bgColor = SET_BG_COLOR_WHITE;
+        } else if (i % 2 == 0 && j % 2 == 0) {
+          bgColor = SET_BG_COLOR_WHITE;
+        }
         string = string + bgColor + character;
       }
       string = string + SET_BG_COLOR_BLACK + "\n";

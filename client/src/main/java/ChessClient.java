@@ -74,7 +74,10 @@ public class ChessClient {
         if (i == 0 || i == 9 || j == 0 || j == 9) {
           bgColor = SET_BG_COLOR_LIGHT_GREY;
           if ((j == 0 || j == 9) && i != 0 && i != 9) {
-            character = " " + String.valueOf(i) + " ";
+            character = " " + i + " ";
+          }
+          if ((i == 0 || i == 9) && j != 0 && j != 9) {
+            character = " " + Character.toString((char) 96 + j) + " ";
           }
         } else if (i % 2 == 1 && j % 2 == 1) {
           bgColor = SET_BG_COLOR_WHITE;

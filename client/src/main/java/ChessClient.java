@@ -39,37 +39,69 @@ public class ChessClient {
 
   public String register(String... params) throws ResponseException {
 
-    return "";
+    return "reg";
   }
 
   public String login(String... params) throws ResponseException {
 
-    return "";
+    return "log";
   }
 
   public String listGames(String... params) throws ResponseException {
 
-    return "";
+    return "list";
   }
 
   public String logout(String... params) throws ResponseException {
 
-    return "";
+    return "loggo";
   }
 
   public String createGame(String... params) throws ResponseException {
 
-    return "";
+    return "cre";
   }
 
   public String joinGame(String... params) throws ResponseException {
+    String string = "";
+    String bgColor;
+    String character;
+    for (int i = 0; i < 10; ++i) {
+      for (int j = 0; j < 10; ++j) {
+        bgColor = SET_BG_COLOR_BLACK;
+        character = SET_TEXT_COLOR_BLACK + EMPTY;
+        //make board white
+        if (i == 0 || i == 9 || j == 0 || j == 9) {
+          bgColor = SET_BG_COLOR_LIGHT_GREY;
+          if ((j == 0 || j == 9) && i != 0 && i != 9) {
+            character = " " + String.valueOf(i) + " ";
+          }
+        } else if (i % 2 == 1 && j % 2 == 1) {
+          bgColor = SET_BG_COLOR_WHITE;
+        } else if (i % 2 == 0 && j % 2 == 0) {
+          bgColor = SET_BG_COLOR_WHITE;
+        }
 
-    return "";
+        //make board black
+
+        //set pieces white
+        //if ()
+
+
+        //set pieces black
+
+
+        string = string + bgColor + character;
+      }
+      string = string + SET_BG_COLOR_BLACK + "\n";
+    }
+
+    return string;
   }
 
   public String observeGame(String... params) throws ResponseException {
 
-    return "";
+    return "ob";
   }
 
   public String help() {

@@ -100,4 +100,17 @@ public class ChessClient {
             SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     return string;
   }
+
+  public boolean isSignedIn() {
+    if (state == State.SIGNEDIN) {
+      return true;
+    }
+    return false;
+  }
+
+  private void assertSignedIn() throws ResponseException {
+    if (state == State.SIGNEDOUT) {
+      throw new ResponseException(400, "You must sign in");
+    }
+  }
 }

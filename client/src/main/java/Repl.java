@@ -39,7 +39,11 @@ public class Repl {
   }*/
 
   private void printPrompt() {
-    System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
+    if (client.isSignedIn()) {
+      System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_IN] >>> " + SET_TEXT_COLOR_GREEN);
+    } else {
+      System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_OUT] >>> " + SET_TEXT_COLOR_GREEN);
+    }
   }
 
 }

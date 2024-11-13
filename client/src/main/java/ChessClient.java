@@ -1,7 +1,14 @@
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.util.Arrays;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
+import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
@@ -11,6 +18,7 @@ public class ChessClient {
   //private final NotificationHandler notificationHandler;
   //private WebSocketFacade ws;
   private State state = State.SIGNEDOUT;
+  private ChessBoard board = new ChessBoard();
 
   public ChessClient(String serverUrl/*, NotificationHandler notificationHandler*/) {
     server = new ServerFacade(serverUrl);
@@ -65,69 +73,130 @@ public class ChessClient {
   }
 
   public String joinGame(String... params) throws ResponseException {
+    board.resetBoard();
 
-    String string = getBoardString(ChessGame.TeamColor.WHITE);
+    String string = getBoardString(WHITE);
     string = string + "\n\n\n";
-    string = string + getBoardString(ChessGame.TeamColor.BLACK);
+    string = string + getBoardString(BLACK);
 
     return string;
   }
 
-  public static String getBoardString(ChessGame.TeamColor color) {
+  public String getBoardString(ChessGame.TeamColor color) {
     String string = "";
     String bgColor;
     String character;
-    if (color == ChessGame.TeamColor.BLACK) {
+    String txtColor;
+    if (color == BLACK) {
       for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
           bgColor = SET_BG_COLOR_BLACK;
-          character = SET_TEXT_COLOR_BLACK + EMPTY;
+          character = EMPTY;
+          txtColor = SET_TEXT_COLOR_BLACK;
           //make board white
           if (i == 0 || i == 9 || j == 0 || j == 9) {
             bgColor = SET_BG_COLOR_LIGHT_GREY;
             if ((j == 0 || j == 9) && i != 0 && i != 9) {
-              character = " " + i + " ";
+              character = SET_TEXT_COLOR_BLACK + " " + i + " ";
             }
             if ((i == 0 || i == 9) && j != 0 && j != 9) {
-              character = " " + Character.toString((char) 96 + 9 - j) + " ";
+              character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + 9 - j) + " ";
             }
           } else if (i % 2 == 1 && j % 2 == 1) {
             bgColor = SET_BG_COLOR_WHITE;
           } else if (i % 2 == 0 && j % 2 == 0) {
             bgColor = SET_BG_COLOR_WHITE;
           }
+          if (i != 0 && i != 9 && j != 0 && j != 9) {
+            character = piecesOnBoard(i, j, color);
+          }
+
           string = string + bgColor + character;
         }
         string = string + SET_BG_COLOR_BLACK + "\n";
       }
-    } else if (color == ChessGame.TeamColor.WHITE) {
+    } else if (color == WHITE) {
       for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 10; ++j) {
           bgColor = SET_BG_COLOR_BLACK;
-          character = SET_TEXT_COLOR_BLACK + EMPTY;
+          character = EMPTY;
+          txtColor = SET_TEXT_COLOR_BLACK;
           //string = string + "";
           //make board black
           if (i == 0 || i == 9 || j == 0 || j == 9) {
             bgColor = SET_BG_COLOR_LIGHT_GREY;
             if ((j == 0 || j == 9) && i != 0 && i != 9) {
-              character = " " + (9 - i) + " ";
+              character = SET_TEXT_COLOR_BLACK + " " + (9 - i) + " ";
             }
             if ((i == 0 || i == 9) && j != 0 && j != 9) {
-              character = " " + Character.toString((char) 96 + j) + " ";
+              character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + j) + " ";
             }
           } else if (i % 2 == 1 && j % 2 == 1) {
             bgColor = SET_BG_COLOR_WHITE;
           } else if (i % 2 == 0 && j % 2 == 0) {
             bgColor = SET_BG_COLOR_WHITE;
           }
+
+          if (i != 0 && i != 9 && j != 0 && j != 9) {
+            character = piecesOnBoard(i, j, color);
+          }
+
           string = string + bgColor + character;
         }
         string = string + SET_BG_COLOR_BLACK + "\n";
       }
     }
 
-
     return string;
+  }
+
+  private String piecesOnBoard(int i, int j, ChessGame.TeamColor color) {
+    String txtColor = "";
+    String character = "";
+    int dif = 0;
+    if (color == WHITE) {
+      dif = 9;
+    }
+    if (i != 0 && i != 9 && j != 0 && j != 9) {
+      ChessPiece piece = board.getPiece(new ChessPosition(abs(dif - i), abs(j - dif)));
+      if (piece != null) {
+        if (piece.getTeamColor() == WHITE) {
+          txtColor = SET_TEXT_COLOR_LIGHT_GREY;
+          if (piece.getPieceType() == PAWN) {
+            character = WHITE_PAWN;
+          } else if (piece.getPieceType() == ROOK) {
+            character = WHITE_ROOK;
+          } else if (piece.getPieceType() == KNIGHT) {
+            character = WHITE_KNIGHT;
+          } else if (piece.getPieceType() == BISHOP) {
+            character = WHITE_BISHOP;
+          } else if (piece.getPieceType() == QUEEN) {
+            character = WHITE_QUEEN;
+          } else if (piece.getPieceType() == KING) {
+            character = WHITE_KING;
+          }
+        } else if (piece.getTeamColor() == BLACK) {
+          txtColor = SET_TEXT_COLOR_BLUE;
+          if (piece.getPieceType() == PAWN) {
+            character = BLACK_PAWN;
+          } else if (piece.getPieceType() == ROOK) {
+            character = BLACK_ROOK;
+          } else if (piece.getPieceType() == KNIGHT) {
+            character = BLACK_KNIGHT;
+          } else if (piece.getPieceType() == BISHOP) {
+            character = BLACK_BISHOP;
+          } else if (piece.getPieceType() == QUEEN) {
+            character = BLACK_QUEEN;
+          } else if (piece.getPieceType() == KING) {
+            character = BLACK_KING;
+          }
+        }
+      } else {
+        txtColor = SET_TEXT_COLOR_BLACK;
+        character = EMPTY;
+      }
+    }
+    return txtColor + character;
   }
 
   public String observeGame(String... params) throws ResponseException {

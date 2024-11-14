@@ -151,12 +151,7 @@ public class ChessClient {
           //make board white
           if (i == 0 || i == 9 || j == 0 || j == 9) {
             bgColor = SET_BG_COLOR_LIGHT_GREY;
-            if ((j == 0 || j == 9) && i != 0 && i != 9) {
-              character = SET_TEXT_COLOR_BLACK + " " + i + " ";
-            }
-            if ((i == 0 || i == 9) && j != 0 && j != 9) {
-              character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + 9 - j) + " ";
-            }
+            character = posChar(color, i, j);
           } else if (i % 2 == 1 && j % 2 == 1) {
             bgColor = SET_BG_COLOR_WHITE;
           } else if (i % 2 == 0 && j % 2 == 0) {
@@ -176,16 +171,9 @@ public class ChessClient {
           bgColor = SET_BG_COLOR_BLACK;
           character = EMPTY;
           txtColor = SET_TEXT_COLOR_BLACK;
-          //string = string + "";
-          //make board black
           if (i == 0 || i == 9 || j == 0 || j == 9) {
             bgColor = SET_BG_COLOR_LIGHT_GREY;
-            if ((j == 0 || j == 9) && i != 0 && i != 9) {
-              character = SET_TEXT_COLOR_BLACK + " " + (9 - i) + " ";
-            }
-            if ((i == 0 || i == 9) && j != 0 && j != 9) {
-              character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + j) + " ";
-            }
+            character = posChar(color, i, j);
           } else if (i % 2 == 1 && j % 2 == 1) {
             bgColor = SET_BG_COLOR_WHITE;
           } else if (i % 2 == 0 && j % 2 == 0) {
@@ -203,6 +191,27 @@ public class ChessClient {
     }
 
     return string;
+  }
+
+  private String posChar(ChessGame.TeamColor color, int i, int j) {
+    String character = EMPTY;
+    if (color == BLACK) {
+      if ((j == 0 || j == 9) && i != 0 && i != 9) {
+        character = SET_TEXT_COLOR_BLACK + " " + i + " ";
+      }
+      if ((i == 0 || i == 9) && j != 0 && j != 9) {
+        character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + 9 - j) + " ";
+      }
+    } else if (color == WHITE) {
+      if ((j == 0 || j == 9) && i != 0 && i != 9) {
+        character = SET_TEXT_COLOR_BLACK + " " + (9 - i) + " ";
+      }
+      if ((i == 0 || i == 9) && j != 0 && j != 9) {
+        character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + j) + " ";
+      }
+    }
+
+    return character;
   }
 
   private String piecesOnBoard(int i, int j, ChessGame.TeamColor color) {
@@ -253,7 +262,6 @@ public class ChessClient {
       } else {
         return blackCharacter;
       }
-      //return color == ChessGame.TeamColor.WHITE ? whiteCharacter : blackCharacter;
     }
   }
 

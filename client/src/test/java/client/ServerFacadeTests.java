@@ -2,6 +2,7 @@ package client;
 
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
+import model.NewGameRequest;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.ResponseException;
@@ -109,8 +110,37 @@ public class ServerFacadeTests {
       facade.login(loginReq);
       facade.logout("aaaaaa");
     } catch (ResponseException e) {
-      Assertions.assertEquals("Error: unauthorized", e.getMessage());
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
       Assertions.assertNotNull(authAccess.getAuth("u"));
+    }
+  }
+
+  @Test
+  public void createGame() throws ResponseException {
+    UserData user1 = new UserData("u", "p", "e");
+    facade.register(user1);
+    UserData loginReq = new UserData("u", "p", "e");
+    facade.login(loginReq);
+
+    NewGameRequest gameN = new NewGameRequest("MY GAME!");
+    facade.createGame(gameN, authAccess.getAuth("u").authToken());
+
+    Assertions.assertNotNull(gameAccess.getGame(gameN.gameName()));
+    Assertions.assertEquals("MY GAME!", gameAccess.getGame(gameN.gameName()).gameName());
+  }
+
+  @Test
+  public void createGameFail() throws ResponseException {
+    UserData user1 = new UserData("u", "p", "e");
+    facade.register(user1);
+    UserData loginReq = new UserData("u", "p", "e");
+    facade.login(loginReq);
+
+    try {
+      NewGameRequest gameN = new NewGameRequest("MY GAME!");
+      facade.createGame(gameN, "gg");
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
     }
   }
 

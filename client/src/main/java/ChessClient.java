@@ -2,6 +2,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.AuthData;
 import server.ResponseException;
 import model.UserData;
 import server.ServerFacade;
@@ -14,7 +15,7 @@ import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
-  private String visitorName = null;
+  private AuthData myAuth = null;
   private final ServerFacade server;
   private final String serverUrl;
   //private final NotificationHandler notificationHandler;
@@ -52,7 +53,8 @@ public class ChessClient {
   public String register(String... params) throws ResponseException {
     if (params.length == 3) {
       UserData newUser = new UserData(params[0], params[1], params[2]);
-      server.register(newUser);
+      myAuth = server.register(newUser);
+      state = State.SIGNEDIN;
       return "Successfully Registered!";
     }
     throw new ResponseException(400, "Expected <USERNAME> <PASSWORD> <EMAIL>");
@@ -61,7 +63,7 @@ public class ChessClient {
   public String login(String... params) throws ResponseException {
     if (params.length == 2) {
       UserData user = new UserData(params[0], params[1], "");
-      server.login(user);
+      myAuth = server.login(user);
       state = State.SIGNEDIN;
       return "Logged in!";
     }
@@ -76,7 +78,7 @@ public class ChessClient {
 
   public String logout(String... params) throws ResponseException {
     assertSignedIn();
-
+    server.logout(myAuth.authToken());
     state = State.SIGNEDOUT;
     return "Logged out!";
   }

@@ -73,8 +73,9 @@ public class ChessClient {
 
   public String listGames(String... params) throws ResponseException {
     assertSignedIn();
+    GameList list = server.listGames(myAuth.authToken());
 
-    return "list";
+    return list.toString();
   }
 
   public String logout(String... params) throws ResponseException {

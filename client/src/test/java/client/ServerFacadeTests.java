@@ -159,6 +159,109 @@ public class ServerFacadeTests {
   }
 
   @Test
+  public void joinGameFail1() throws DataAccessException {
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    authAccess.addAuth(new AuthData("g", "New User"));
+
+    JoinGameRequest joinGame = new JoinGameRequest(ChessGame.TeamColor.WHITE, 1234);
+
+    try {
+      facade.joinGame("h", joinGame);
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
+      Assertions.assertNull(gameAccess.getGame("My Named Game").whiteUsername());
+    }
+  }
+
+  @Test
+  public void joinGameFail2() throws DataAccessException {
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    authAccess.addAuth(new AuthData("g", "New User"));
+
+    JoinGameRequest joinGame = new JoinGameRequest(ChessGame.TeamColor.WHITE, 1237);
+
+    try {
+      facade.joinGame("g", joinGame);
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: bad request"));
+      Assertions.assertNull(gameAccess.getGame("My Named Game").whiteUsername());
+    }
+  }
+
+  @Test
+  public void joinGameFail3() throws DataAccessException {
+    GameData newGame = new GameData(1234, "o",
+            null, "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    authAccess.addAuth(new AuthData("g", "New User"));
+
+    JoinGameRequest joinGame = new JoinGameRequest(ChessGame.TeamColor.WHITE, 1234);
+
+    try {
+      facade.joinGame("g", joinGame);
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: already taken"));
+      Assertions.assertNotEquals("New User",
+              gameAccess.getGame("My Named Game").whiteUsername());
+    }
+  }
+
+  @Test
+  public void joinGameFail4() throws DataAccessException {
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    authAccess.addAuth(new AuthData("g", "New User"));
+
+    JoinGameRequest joinGame = new JoinGameRequest(ChessGame.TeamColor.BLACK, 1234);
+
+    try {
+      facade.joinGame("g", joinGame);
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: already taken"));
+      Assertions.assertNotEquals("New User",
+              gameAccess.getGame("My Named Game").blackUsername());
+    }
+  }
+
+  @Test
+  public void listGames() throws ResponseException, DataAccessException {
+    facade.register(new UserData("hstohl", "pass", "email"));
+
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    GameData newGame2 = new GameData(1547, "yellow",
+            "l", "My New Game", new ChessGame());
+    gameAccess.addGame(newGame2);
+
+    GameList list = facade.listGames(authAccess.getAuth("hstohl").authToken());
+    Assertions.assertEquals(2, list.games().size());
+  }
+
+  @Test
+  public void listGamesFail() throws DataAccessException, ResponseException {
+    facade.register(new UserData("hstohl", "pass", "email"));
+
+    GameData newGame = new GameData(1234, null,
+            "b", "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    GameData newGame2 = new GameData(1547, "yellow",
+            "l", "My New Game", new ChessGame());
+    gameAccess.addGame(newGame2);
+
+    try {
+      facade.listGames("hjhvugc");
+    } catch (ResponseException e) {
+      Assertions.assertEquals("Error: unauthorized", e.getMessage());
+    }
+  }
+
+  @Test
   public void sampleTest() {
     assertTrue(true);
   }

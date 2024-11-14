@@ -2,6 +2,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import com.google.gson.Gson;
+import model.UserData;
 
 import java.util.Arrays;
 
@@ -15,6 +17,7 @@ public class ChessClient {
   private String visitorName = null;
   private final ServerFacade server;
   private final String serverUrl;
+  private final Gson serializer = new Gson();
   //private final NotificationHandler notificationHandler;
   //private WebSocketFacade ws;
   private State state = State.SIGNEDOUT;
@@ -48,8 +51,12 @@ public class ChessClient {
   }
 
   public String register(String... params) throws ResponseException {
-
-    return "reg";
+    if (params.length == 3) {
+      UserData newUser = new UserData(params[0], params[1], params[2]);
+      server.register(newUser);
+      return "Successfully Registered!";
+    }
+    throw new ResponseException(400, "Expected <USERNAME> <PASSWORD> <EMAIL>");
   }
 
   public String login(String... params) throws ResponseException {
@@ -58,21 +65,36 @@ public class ChessClient {
   }
 
   public String listGames(String... params) throws ResponseException {
+    assertSignedIn();
 
     return "list";
   }
 
   public String logout(String... params) throws ResponseException {
+    assertSignedIn();
 
     return "loggo";
   }
 
   public String createGame(String... params) throws ResponseException {
+    assertSignedIn();
 
     return "cre";
   }
 
   public String joinGame(String... params) throws ResponseException {
+    assertSignedIn();
+    board.resetBoard();
+
+    String string = getBoardString(WHITE);
+    string = string + "\n\n\n";
+    string = string + getBoardString(BLACK);
+
+    return string;
+  }
+
+  public String observeGame(String... params) throws ResponseException {
+    assertSignedIn();
     board.resetBoard();
 
     String string = getBoardString(WHITE);
@@ -162,6 +184,14 @@ public class ChessClient {
       if (piece != null) {
         if (piece.getTeamColor() == WHITE) {
           txtColor = SET_TEXT_COLOR_LIGHT_GREY;
+        } else if (piece.getTeamColor() == BLACK) {
+          txtColor = SET_TEXT_COLOR_BLUE;
+        }
+
+        PieceCharacter pieceChar = PieceCharacter.valueOf(piece.getPieceType().name());
+        character = pieceChar.getCharacter(piece.getTeamColor());
+        /*if (piece.getTeamColor() == WHITE) {
+          txtColor = SET_TEXT_COLOR_LIGHT_GREY;
           if (piece.getPieceType() == PAWN) {
             character = WHITE_PAWN;
           } else if (piece.getPieceType() == ROOK) {
@@ -190,7 +220,7 @@ public class ChessClient {
           } else if (piece.getPieceType() == KING) {
             character = BLACK_KING;
           }
-        }
+        } */
       } else {
         txtColor = SET_TEXT_COLOR_BLACK;
         character = EMPTY;
@@ -199,9 +229,30 @@ public class ChessClient {
     return txtColor + character;
   }
 
-  public String observeGame(String... params) throws ResponseException {
+  enum PieceCharacter {
+    PAWN(WHITE_PAWN, BLACK_PAWN),
+    ROOK(WHITE_ROOK, BLACK_ROOK),
+    KNIGHT(WHITE_KNIGHT, BLACK_KNIGHT),
+    BISHOP(WHITE_BISHOP, BLACK_BISHOP),
+    QUEEN(WHITE_QUEEN, BLACK_QUEEN),
+    KING(WHITE_KING, BLACK_KING);
 
-    return "ob";
+    private final String whiteCharacter;
+    private final String blackCharacter;
+
+    PieceCharacter(String whiteCharacter, String blackCharacter) {
+      this.whiteCharacter = whiteCharacter;
+      this.blackCharacter = blackCharacter;
+    }
+
+    public String getCharacter(ChessGame.TeamColor color) {
+      if (color == WHITE) {
+        return whiteCharacter;
+      } else {
+        return blackCharacter;
+      }
+      //return color == ChessGame.TeamColor.WHITE ? whiteCharacter : blackCharacter;
+    }
   }
 
   public String help() {

@@ -142,52 +142,27 @@ public class ChessClient {
     String bgColor;
     String character;
     String txtColor;
-    if (color == BLACK) {
-      for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
-          bgColor = SET_BG_COLOR_BLACK;
-          character = EMPTY;
-          txtColor = SET_TEXT_COLOR_BLACK;
-          //make board white
-          if (i == 0 || i == 9 || j == 0 || j == 9) {
-            bgColor = SET_BG_COLOR_LIGHT_GREY;
-            character = posChar(color, i, j);
-          } else if (i % 2 == 1 && j % 2 == 1) {
-            bgColor = SET_BG_COLOR_WHITE;
-          } else if (i % 2 == 0 && j % 2 == 0) {
-            bgColor = SET_BG_COLOR_WHITE;
-          }
-          if (i != 0 && i != 9 && j != 0 && j != 9) {
-            character = piecesOnBoard(i, j, color);
-          }
-
-          string = string + bgColor + character;
+    for (int i = 0; i < 10; ++i) {
+      for (int j = 0; j < 10; ++j) {
+        bgColor = SET_BG_COLOR_BLACK;
+        character = EMPTY;
+        txtColor = SET_TEXT_COLOR_BLACK;
+        //make board
+        if (i == 0 || i == 9 || j == 0 || j == 9) {
+          bgColor = SET_BG_COLOR_LIGHT_GREY;
+          character = posChar(color, i, j);
+        } else if (i % 2 == 1 && j % 2 == 1) {
+          bgColor = SET_BG_COLOR_WHITE;
+        } else if (i % 2 == 0 && j % 2 == 0) {
+          bgColor = SET_BG_COLOR_WHITE;
         }
-        string = string + SET_BG_COLOR_BLACK + "\n";
-      }
-    } else if (color == WHITE) {
-      for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 10; ++j) {
-          bgColor = SET_BG_COLOR_BLACK;
-          character = EMPTY;
-          txtColor = SET_TEXT_COLOR_BLACK;
-          if (i == 0 || i == 9 || j == 0 || j == 9) {
-            bgColor = SET_BG_COLOR_LIGHT_GREY;
-            character = posChar(color, i, j);
-          } else if (i % 2 == 1 && j % 2 == 1) {
-            bgColor = SET_BG_COLOR_WHITE;
-          } else if (i % 2 == 0 && j % 2 == 0) {
-            bgColor = SET_BG_COLOR_WHITE;
-          }
-
-          if (i != 0 && i != 9 && j != 0 && j != 9) {
-            character = piecesOnBoard(i, j, color);
-          }
-
-          string = string + bgColor + character;
+        if (i != 0 && i != 9 && j != 0 && j != 9) {
+          character = piecesOnBoard(i, j, color);
         }
-        string = string + SET_BG_COLOR_BLACK + "\n";
+
+        string = string + bgColor + character;
       }
+      string = string + SET_BG_COLOR_BLACK + "\n";
     }
 
     return string;

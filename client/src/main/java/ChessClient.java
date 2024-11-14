@@ -8,8 +8,7 @@ import facade.ServerFacade;
 
 import java.util.*;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
 import static java.util.Objects.isNull;
@@ -60,6 +59,7 @@ public class ChessClient {
   }
 
   public String login(String... params) throws ResponseException {
+    assertSignedOut();
     if (params.length == 2) {
       UserData user = new UserData(params[0], params[1], "");
       myAuth = server.login(user);
@@ -112,10 +112,15 @@ public class ChessClient {
   }
 
   public String joinGame(String... params) throws ResponseException {
+    int gameID = 0;
     assertSignedIn();
     if (params.length == 2 &&
             (Objects.equals(params[1].toUpperCase(), "BLACK") || Objects.equals(params[1].toUpperCase(), "WHITE"))) {
-      int gameID = gameMap.get(parseInt(params[0]));
+      try {
+        gameID = gameMap.get(parseInt(params[0]));
+      } catch (Exception e) {
+        throw new ResponseException(400, "Please enter a valid ID.");
+      }
       JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1].toUpperCase()), gameID);
       server.joinGame(myAuth.authToken(), req);
     } else {
@@ -131,9 +136,15 @@ public class ChessClient {
   }
 
   public String observeGame(String... params) throws ResponseException {
+    int gameID = 0;
     assertSignedIn();
     if (params.length == 1) {
-      JoinGameRequest req = new JoinGameRequest(null, parseInt(params[0]));
+      try {
+        gameID = gameMap.get(parseInt(params[0]));
+      } catch (Exception e) {
+        throw new ResponseException(400, "Please enter a valid ID.");
+      }
+      JoinGameRequest req = new JoinGameRequest(NONE, gameID);
       server.joinGame(myAuth.authToken(), req);
     } else {
       throw new ResponseException(400, "Expected <ID>");
@@ -286,6 +297,12 @@ public class ChessClient {
   private void assertSignedIn() throws ResponseException {
     if (state == State.SIGNEDOUT) {
       throw new ResponseException(400, "You must sign in");
+    }
+  }
+
+  private void assertSignedOut() throws ResponseException {
+    if (state == State.SIGNEDIN) {
+      throw new ResponseException(400, "Logout current user before signing in a new user.");
     }
   }
 }

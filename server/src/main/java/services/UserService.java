@@ -11,8 +11,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 
 public class UserService {
   private final DataAccess dataAccess;
@@ -136,6 +135,8 @@ public class UserService {
       GameData updatedGame = new GameData(gameData.gameID(), gameData.whiteUsername(),
               authData.username(), gameData.gameName(), gameData.game());
       gameDataAccess.updateGame(updatedGame);
+    } else if (req.playerColor() == NONE || req.playerColor() == null) {
+      //observer
     } else {
       throw new ServiceException("Error: bad request");
     }

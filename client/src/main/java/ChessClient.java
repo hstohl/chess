@@ -2,14 +2,14 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import com.google.gson.Gson;
+import server.ResponseException;
 import model.UserData;
+import server.ServerFacade;
 
 import java.util.Arrays;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessPiece.PieceType.*;
 import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
 

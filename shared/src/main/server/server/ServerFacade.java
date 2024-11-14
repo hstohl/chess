@@ -1,3 +1,5 @@
+package server;
+
 import com.google.gson.Gson;
 import model.*;
 
@@ -50,7 +52,6 @@ public class ServerFacade {
     var path = "/game";
     return this.makeRequest("GET", path, token, GameList.class);
   }
-
 
   private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
     try {

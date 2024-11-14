@@ -89,7 +89,8 @@ public class ServerFacade {
 
       try (InputStream errorStream = http.getErrorStream()) {
         if (errorStream != null) {
-          message += ": " + new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+          message = new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+          message = message.substring(12, message.length() - 2);
         }
       }
 

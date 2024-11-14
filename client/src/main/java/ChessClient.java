@@ -41,8 +41,8 @@ public class ChessClient {
         case "list" -> listGames();
         case "logout" -> logout();
         case "create" -> createGame(params);
-        case "join" -> joinGame();
-        case "observe" -> observeGame();
+        case "join" -> joinGame(params);
+        case "observe" -> observeGame(params);
         case "quit" -> "quit";
         default -> help();
       };
@@ -76,7 +76,6 @@ public class ChessClient {
     assertSignedIn();
     GameList list = server.listGames(myAuth.authToken());
     gameMap.clear();
-
 
     String gameList = "";
     for (GameDataMini game : list.games()) {
@@ -117,10 +116,13 @@ public class ChessClient {
 
   public String joinGame(String... params) throws ResponseException {
     assertSignedIn();
-    if (params.length == 2 && (Objects.equals(params[1], "BLACK") || Objects.equals(params[1], "WHITE"))) {
+    if (params.length == 2 &&
+            (Objects.equals(params[1].toUpperCase(), "BLACK") || Objects.equals(params[1].toUpperCase(), "WHITE"))) {
       int gameID = gameMap.get(parseInt(params[0]));
-      JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1]), gameID);
+      JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1].toUpperCase()), gameID);
       server.joinGame(myAuth.authToken(), req);
+    } else {
+      throw new ResponseException(400, "Expected <ID> [WHITE|BLACK]");
     }
 
     board.resetBoard();
@@ -136,6 +138,8 @@ public class ChessClient {
     if (params.length == 1) {
       JoinGameRequest req = new JoinGameRequest(null, parseInt(params[0]));
       server.joinGame(myAuth.authToken(), req);
+    } else {
+      throw new ResponseException(400, "Expected <ID>");
     }
 
     board.resetBoard();

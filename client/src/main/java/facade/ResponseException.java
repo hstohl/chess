@@ -13,8 +13,4 @@ public class ResponseException extends Exception {
   public String getMessage() {
     return message;
   }
-
-  public int StatusCode() {
-    return statusCode;
-  }
 }

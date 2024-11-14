@@ -1,13 +1,12 @@
 package client;
 
 import chess.ChessGame;
-import com.google.protobuf.ServiceException;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
-import server.ResponseException;
+import facade.ResponseException;
 import server.Server;
-import server.ServerFacade;
+import facade.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
 

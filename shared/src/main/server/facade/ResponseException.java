@@ -1,4 +1,4 @@
-package server;
+package facade;
 
 public class ResponseException extends Exception {
   final private int statusCode;

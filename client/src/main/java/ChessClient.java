@@ -21,8 +21,6 @@ public class ChessClient {
   private final String serverUrl;
   private State state = State.SIGNEDOUT;
   private ChessBoard board = new ChessBoard();
-  private ArrayList<GameDataMini> gameIds = new ArrayList<>();
-
   private Map<Integer, Integer> gameMap = new HashMap<>();
 
   public ChessClient(String serverUrl) {
@@ -108,7 +106,6 @@ public class ChessClient {
     if (params.length == 1) {
       NewGameRequest req = new NewGameRequest(params[0]);
       NewGameResult game = server.createGame(req, myAuth.authToken());
-      //gameIds.add(game);
       return "Game Created. \nGame Name: " + req.gameName();
     }
     throw new ResponseException(400, "Expected <NAME>");

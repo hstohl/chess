@@ -6,8 +6,7 @@ import model.*;
 import facade.ResponseException;
 import facade.ServerFacade;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
@@ -22,6 +21,9 @@ public class ChessClient {
   private final String serverUrl;
   private State state = State.SIGNEDOUT;
   private ChessBoard board = new ChessBoard();
+  private ArrayList<GameDataMini> gameIds = new ArrayList<>();
+
+  private Map<Integer, Integer> gameMap = new HashMap<>();
 
   public ChessClient(String serverUrl) {
     server = new ServerFacade(serverUrl);
@@ -70,11 +72,15 @@ public class ChessClient {
   }
 
   public String listGames(String... params) throws ResponseException {
+    int currGameNum = 1;
     assertSignedIn();
     GameList list = server.listGames(myAuth.authToken());
+    gameMap.clear();
+
 
     String gameList = "";
     for (GameDataMini game : list.games()) {
+      //GameDataMini game = list.games().get(i);
       String white = "";
       String black = "";
       if (!isNull(game.whiteUsername())) {
@@ -83,8 +89,9 @@ public class ChessClient {
       if (!isNull(game.blackUsername())) {
         black = game.blackUsername();
       }
-      gameList += "Game Name: " + game.gameName() + "\nGame ID: " + game.gameID()
-              + "\nWhite Player: " + white + "\nBlack Player: " + black + "\n\n";
+      gameMap.put(currGameNum, game.gameID());
+      gameList += (currGameNum) + ".  " + "Game Name: " + game.gameName() + "\nWhite Player: " + white + "\nBlack Player: " + black + "\n\n";
+      ++currGameNum;
     }
 
     return gameList;
@@ -102,7 +109,8 @@ public class ChessClient {
     if (params.length == 1) {
       NewGameRequest req = new NewGameRequest(params[0]);
       NewGameResult game = server.createGame(req, myAuth.authToken());
-      return "Game Created. Game Name: " + req.gameName() + "\nGame ID: " + game.gameID();
+      //gameIds.add(game);
+      return "Game Created. \nGame Name: " + req.gameName();
     }
     throw new ResponseException(400, "Expected <NAME>");
   }
@@ -110,7 +118,8 @@ public class ChessClient {
   public String joinGame(String... params) throws ResponseException {
     assertSignedIn();
     if (params.length == 2 && (Objects.equals(params[1], "BLACK") || Objects.equals(params[1], "WHITE"))) {
-      JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1]), parseInt(params[0]));
+      int gameID = gameMap.get(parseInt(params[0]));
+      JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1]), gameID);
       server.joinGame(myAuth.authToken(), req);
     }
 

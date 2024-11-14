@@ -6,6 +6,7 @@ import dataaccess.*;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -149,6 +150,6 @@ public class UserService {
       throw new ServiceException("Error: unauthorized");
     }
 
-    return new GameList(gameDataAccess.listGames());
+    return new GameList((ArrayList<GameDataMini>) gameDataAccess.listGames());
   }
 }

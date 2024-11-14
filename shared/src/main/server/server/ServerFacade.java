@@ -53,7 +53,7 @@ public class ServerFacade {
 
   public GameList listGames(String token) throws ResponseException {
     var path = "/game";
-    return this.makeRequest("GET", path, token, GameList.class, token);
+    return this.makeRequest("GET", path, null, GameList.class, token);
   }
 
   private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {

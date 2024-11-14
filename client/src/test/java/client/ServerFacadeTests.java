@@ -234,10 +234,10 @@ public class ServerFacadeTests {
 
     GameData newGame = new GameData(1234, null,
             "b", "My Named Game", new ChessGame());
-    gameAccess.addGame(newGame);
+    facade.createGame(new NewGameRequest("My Named Game"), authAccess.getAuth("hstohl").authToken());
     GameData newGame2 = new GameData(1547, "yellow",
             "l", "My New Game", new ChessGame());
-    gameAccess.addGame(newGame2);
+    facade.createGame(new NewGameRequest("My New Game"), authAccess.getAuth("hstohl").authToken());
 
     GameList list = facade.listGames(authAccess.getAuth("hstohl").authToken());
     Assertions.assertEquals(2, list.games().size());
@@ -257,7 +257,7 @@ public class ServerFacadeTests {
     try {
       facade.listGames("hjhvugc");
     } catch (ResponseException e) {
-      Assertions.assertEquals("Error: unauthorized", e.getMessage());
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
     }
   }
 

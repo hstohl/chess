@@ -59,8 +59,13 @@ public class ChessClient {
   }
 
   public String login(String... params) throws ResponseException {
-
-    return "log";
+    if (params.length == 2) {
+      UserData user = new UserData(params[0], params[1], "");
+      server.login(user);
+      state = State.SIGNEDIN;
+      return "Logged in!";
+    }
+    throw new ResponseException(400, "Expected <USERNAME> <PASSWORD>");
   }
 
   public String listGames(String... params) throws ResponseException {
@@ -72,7 +77,8 @@ public class ChessClient {
   public String logout(String... params) throws ResponseException {
     assertSignedIn();
 
-    return "loggo";
+    state = State.SIGNEDOUT;
+    return "Logged out!";
   }
 
   public String createGame(String... params) throws ResponseException {

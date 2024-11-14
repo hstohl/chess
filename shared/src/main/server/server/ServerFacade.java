@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
   private final String serverUrl;
@@ -82,7 +83,15 @@ public class ServerFacade {
   private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
     var status = http.getResponseCode();
     if (!isSuccessful(status)) {
-      throw new ResponseException(status, "failure: " + status);
+      var message = http.getResponseMessage();
+
+      try (InputStream errorStream = http.getErrorStream()) {
+        if (errorStream != null) {
+          message += ": " + new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+      }
+
+      throw new ResponseException(status, message);
     }
   }
 

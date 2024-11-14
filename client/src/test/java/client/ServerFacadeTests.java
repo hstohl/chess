@@ -1,18 +1,24 @@
 package client;
 
+import com.google.protobuf.ServiceException;
+import dataaccess.*;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import server.ResponseException;
 import server.Server;
 import server.ServerFacade;
 
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
 
   private static Server server;
   static ServerFacade facade;
+  private final DataAccess userAccess = new UserDatabaseAccess();
+  private final AuthDataAccess authAccess = new AuthDatabaseAccess();
+  private final GameDataAccess gameAccess = new GameDatabaseAccess();
+
 
   @BeforeAll
   public static void init() {
@@ -37,6 +43,75 @@ public class ServerFacadeTests {
   void register() throws Exception {
     var authData = facade.register(new UserData("hstohl", "password", "email@email.com"));
     assertTrue(authData.authToken().length() > 10);
+    assertEquals("hstohl", authAccess.getAuthT(authData.authToken()).username());
+  }
+
+  @Test
+  void registerFail() {
+    try {
+      facade.register(new UserData("hstohl", "b", "email"));
+      facade.register(new UserData("hstohl", "b", "email"));
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: already taken"));
+    }
+  }
+
+  @Test
+  void clearTest() throws ResponseException {
+    facade.register(new UserData("hstohl", "b", "email"));
+    assertNotNull(userAccess.getUser("hstohl"));
+    facade.clear();
+    assertNull(userAccess.getUser("hstohl"));
+  }
+
+  @Test
+  void login() throws ResponseException {
+    facade.register(new UserData("hstohl", "password", "email"));
+    var authData = facade.login(new UserData("hstohl", "password", "email@email.com"));
+    assertTrue(authData.authToken().length() > 10);
+    assertEquals(authData.authToken(), authAccess.getAuth("hstohl").authToken());
+  }
+
+  @Test
+  void loginFail1() {
+    try {
+      facade.register(new UserData("hstohl", "b", "email"));
+      facade.login(new UserData("hstohl", "p", "email"));
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
+    }
+  }
+
+  @Test
+  void loginFail2() {
+    try {
+      facade.register(new UserData("hstohl", "b", "email"));
+      facade.login(new UserData("hsthl", "p", "eml"));
+    } catch (ResponseException e) {
+      Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
+    }
+  }
+
+  @Test
+  void logout() throws ResponseException {
+    UserData user1 = new UserData("u", "p", "e");
+    facade.register(user1);
+    facade.logout(authAccess.getAuth("u").authToken());
+    Assertions.assertNull(authAccess.getAuth("u"));
+  }
+
+  @Test
+  public void logoutTestFail() throws ResponseException {
+    UserData user1 = new UserData("u", "p", "e");
+    facade.register(user1);
+    UserData loginReq = new UserData("u", "p", "e");
+    try {
+      facade.login(loginReq);
+      facade.logout("aaaaaa");
+    } catch (ResponseException e) {
+      Assertions.assertEquals("Error: unauthorized", e.getMessage());
+      Assertions.assertNotNull(authAccess.getAuth("u"));
+    }
   }
 
   @Test

@@ -135,7 +135,7 @@ public class UserService {
       GameData updatedGame = new GameData(gameData.gameID(), gameData.whiteUsername(),
               authData.username(), gameData.gameName(), gameData.game());
       gameDataAccess.updateGame(updatedGame);
-    } else if (req.playerColor() == NONE || req.playerColor() == null) {
+    } else if (req.playerColor() == NONE) {
       //observer
     } else {
       throw new ServiceException("Error: bad request");

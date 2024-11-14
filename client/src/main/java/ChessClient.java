@@ -17,7 +17,6 @@ public class ChessClient {
   private String visitorName = null;
   private final ServerFacade server;
   private final String serverUrl;
-  private final Gson serializer = new Gson();
   //private final NotificationHandler notificationHandler;
   //private WebSocketFacade ws;
   private State state = State.SIGNEDOUT;

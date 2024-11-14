@@ -2,15 +2,16 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import model.AuthData;
+import model.*;
 import server.ResponseException;
-import model.UserData;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
 
@@ -85,14 +86,22 @@ public class ChessClient {
 
   public String createGame(String... params) throws ResponseException {
     assertSignedIn();
-
-    return "cre";
+    if (params.length == 1) {
+      NewGameRequest req = new NewGameRequest(params[0]);
+      NewGameResult game = server.createGame(req, myAuth.authToken());
+      return "Game Created. Game Name: " + req.gameName() + "\nGame ID: " + game.gameID();
+    }
+    throw new ResponseException(400, "Expected <NAME>");
   }
 
   public String joinGame(String... params) throws ResponseException {
     assertSignedIn();
-    board.resetBoard();
+    if (params.length == 2 && (Objects.equals(params[1], "BLACK") || Objects.equals(params[1], "WHITE"))) {
+      JoinGameRequest req = new JoinGameRequest(ChessGame.TeamColor.valueOf(params[1]), parseInt(params[0]));
+      server.joinGame(myAuth.authToken(), req);
+    }
 
+    board.resetBoard();
     String string = getBoardString(WHITE);
     string = string + "\n\n\n";
     string = string + getBoardString(BLACK);

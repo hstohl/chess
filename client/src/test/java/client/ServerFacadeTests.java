@@ -1,9 +1,9 @@
 package client;
 
+import chess.ChessGame;
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
-import model.NewGameRequest;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.*;
 import server.ResponseException;
 import server.Server;
@@ -142,6 +142,20 @@ public class ServerFacadeTests {
     } catch (ResponseException e) {
       Assertions.assertTrue(e.getMessage().contains("Error: unauthorized"));
     }
+  }
+
+  @Test
+  void join() throws ResponseException, DataAccessException {
+    GameData newGame = new GameData(1234, null,
+            null, "My Named Game", new ChessGame());
+    gameAccess.addGame(newGame);
+    authAccess.addAuth(new AuthData("g", "New User"));
+
+    JoinGameRequest joinGame = new JoinGameRequest(ChessGame.TeamColor.WHITE, 1234);
+
+    facade.joinGame("g", joinGame);
+
+    Assertions.assertEquals("New User", gameAccess.getGame("My Named Game").whiteUsername());
   }
 
   @Test

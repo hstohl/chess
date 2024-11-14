@@ -16,23 +16,18 @@ import static chess.ChessGame.TeamColor.WHITE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
 import static java.util.Objects.isNull;
-import static jdk.dynalink.linker.support.Guards.isNotNull;
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
   private AuthData myAuth = null;
   private final ServerFacade server;
   private final String serverUrl;
-  //private final NotificationHandler notificationHandler;
-  //private WebSocketFacade ws;
   private State state = State.SIGNEDOUT;
   private ChessBoard board = new ChessBoard();
-  Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  public ChessClient(String serverUrl/*, NotificationHandler notificationHandler*/) {
+  public ChessClient(String serverUrl) {
     server = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
-    //this.notificationHandler = notificationHandler;
   }
 
   public String eval(String input) {
@@ -230,37 +225,6 @@ public class ChessClient {
 
         PieceCharacter pieceChar = PieceCharacter.valueOf(piece.getPieceType().name());
         character = pieceChar.getCharacter(piece.getTeamColor());
-        /*if (piece.getTeamColor() == WHITE) {
-          txtColor = SET_TEXT_COLOR_LIGHT_GREY;
-          if (piece.getPieceType() == PAWN) {
-            character = WHITE_PAWN;
-          } else if (piece.getPieceType() == ROOK) {
-            character = WHITE_ROOK;
-          } else if (piece.getPieceType() == KNIGHT) {
-            character = WHITE_KNIGHT;
-          } else if (piece.getPieceType() == BISHOP) {
-            character = WHITE_BISHOP;
-          } else if (piece.getPieceType() == QUEEN) {
-            character = WHITE_QUEEN;
-          } else if (piece.getPieceType() == KING) {
-            character = WHITE_KING;
-          }
-        } else if (piece.getTeamColor() == BLACK) {
-          txtColor = SET_TEXT_COLOR_BLUE;
-          if (piece.getPieceType() == PAWN) {
-            character = BLACK_PAWN;
-          } else if (piece.getPieceType() == ROOK) {
-            character = BLACK_ROOK;
-          } else if (piece.getPieceType() == KNIGHT) {
-            character = BLACK_KNIGHT;
-          } else if (piece.getPieceType() == BISHOP) {
-            character = BLACK_BISHOP;
-          } else if (piece.getPieceType() == QUEEN) {
-            character = BLACK_QUEEN;
-          } else if (piece.getPieceType() == KING) {
-            character = BLACK_KING;
-          }
-        } */
       } else {
         txtColor = SET_TEXT_COLOR_BLACK;
         character = EMPTY;
@@ -325,10 +289,7 @@ public class ChessClient {
   }
 
   public boolean isSignedIn() {
-    if (state == State.SIGNEDIN) {
-      return true;
-    }
-    return false;
+    return state == State.SIGNEDIN;
   }
 
   private void assertSignedIn() throws ResponseException {

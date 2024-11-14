@@ -2,6 +2,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.*;
 import server.ResponseException;
 import server.ServerFacade;
@@ -13,6 +15,8 @@ import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
+import static java.util.Objects.isNull;
+import static jdk.dynalink.linker.support.Guards.isNotNull;
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
@@ -23,6 +27,7 @@ public class ChessClient {
   //private WebSocketFacade ws;
   private State state = State.SIGNEDOUT;
   private ChessBoard board = new ChessBoard();
+  Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   public ChessClient(String serverUrl/*, NotificationHandler notificationHandler*/) {
     server = new ServerFacade(serverUrl);
@@ -75,7 +80,21 @@ public class ChessClient {
     assertSignedIn();
     GameList list = server.listGames(myAuth.authToken());
 
-    return list.toString();
+    String gameList = "";
+    for (GameDataMini game : list.games()) {
+      String white = "";
+      String black = "";
+      if (!isNull(game.whiteUsername())) {
+        white = game.whiteUsername();
+      }
+      if (!isNull(game.blackUsername())) {
+        black = game.blackUsername();
+      }
+      gameList += "Game Name: " + game.gameName() + "\nGame ID: " + game.gameID()
+              + "\nWhite Player: " + white + "\nBlack Player: " + black + "\n\n";
+    }
+
+    return gameList;
   }
 
   public String logout(String... params) throws ResponseException {
@@ -112,8 +131,12 @@ public class ChessClient {
 
   public String observeGame(String... params) throws ResponseException {
     assertSignedIn();
-    board.resetBoard();
+    if (params.length == 1) {
+      JoinGameRequest req = new JoinGameRequest(null, parseInt(params[0]));
+      server.joinGame(myAuth.authToken(), req);
+    }
 
+    board.resetBoard();
     String string = getBoardString(WHITE);
     string = string + "\n\n\n";
     string = string + getBoardString(BLACK);

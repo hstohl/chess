@@ -40,12 +40,17 @@ public class ChessClient {
         case "create" -> createGame(params);
         case "join" -> joinGame(params);
         case "observe" -> observeGame(params);
-        case "quit" -> "quit";
+        case "quit" -> quit();
         default -> help();
       };
     } catch (ResponseException ex) {
       return ex.getMessage();
     }
+  }
+
+  public String quit() throws ResponseException {
+    assertSignedOut();
+    return "quit";
   }
 
   public String register(String... params) throws ResponseException {
@@ -283,8 +288,6 @@ public class ChessClient {
             SET_TEXT_COLOR_LIGHT_GREY + "- aa game\n" +
             SET_TEXT_COLOR_BLUE + "logout " +
             SET_TEXT_COLOR_LIGHT_GREY + "- when you are done\n" +
-            SET_TEXT_COLOR_BLUE + "quit " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- playing chess\n" +
             SET_TEXT_COLOR_BLUE + "help " +
             SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     return string;
@@ -302,7 +305,7 @@ public class ChessClient {
 
   private void assertSignedOut() throws ResponseException {
     if (state == State.SIGNEDIN) {
-      throw new ResponseException(400, "Logout current user before signing in a new user.");
+      throw new ResponseException(400, "Logout before performing this action.");
     }
   }
 }

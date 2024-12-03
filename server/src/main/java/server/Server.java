@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.protobuf.ServiceException;
 import dataaccess.*;
 import model.*;
+import server.websocket.WebSocketHandler;
 import services.UserService;
 import spark.*;
 
@@ -16,6 +17,7 @@ public class Server {
   private final GameDataAccess gameDataAccess = new GameDatabaseAccess();
   private final UserService service = new UserService(dataAccess, authDataAccess, gameDataAccess);
   private final Gson serializer = new Gson();
+  private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
   public int run(int desiredPort) {
     Spark.port(desiredPort);
@@ -24,6 +26,8 @@ public class Server {
 
     //This line initializes the server and can be removed once you have a functioning endpoint
     Spark.init();
+
+    //Spark.webSocket("/ws", webSocketHandler);
 
     Spark.post("/user", this::createUser);
     Spark.delete("/db", (req, response) -> deleteDB());

@@ -24,10 +24,7 @@ public class Server {
 
     Spark.staticFiles.location("web");
 
-    //This line initializes the server and can be removed once you have a functioning endpoint
-    Spark.init();
-
-    //Spark.webSocket("/ws", webSocketHandler);
+    Spark.webSocket("/ws", webSocketHandler);
 
     Spark.post("/user", this::createUser);
     Spark.delete("/db", (req, response) -> deleteDB());

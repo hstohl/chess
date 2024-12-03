@@ -2,6 +2,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import facade.NotificationHandler;
+import facade.WebSocketFacade;
 import model.*;
 import facade.ResponseException;
 import facade.ServerFacade;
@@ -15,6 +17,8 @@ import static java.util.Objects.isNull;
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
+  private WebSocketFacade ws;
+  private final NotificationHandler notificationHandler;
   private AuthData myAuth = null;
   private final ServerFacade server;
   private final String serverUrl;
@@ -22,7 +26,8 @@ public class ChessClient {
   private ChessBoard board = new ChessBoard();
   private Map<Integer, Integer> gameMap = new HashMap<>();
 
-  public ChessClient(String serverUrl) {
+  public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
+    this.notificationHandler = notificationHandler;
     server = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
   }
@@ -131,6 +136,9 @@ public class ChessClient {
     } else {
       throw new ResponseException(400, "Expected <ID> [WHITE|BLACK]");
     }
+
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    ws.connectToGame(myAuth.authToken(), gameID);
 
     board.resetBoard();
     String string = getBoardString(WHITE);

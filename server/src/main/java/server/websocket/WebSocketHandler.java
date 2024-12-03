@@ -31,35 +31,35 @@ public class WebSocketHandler {
   private void connect(String auth, int id, Session session) throws IOException {
     connections.add(auth, session);
     var message = String.format("%s is in the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
     connections.broadcast(auth, notification);
   }
 
   private void makeMove(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
     connections.broadcast(auth, notification);
   }
 
   private void leave(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
     connections.broadcast(auth, notification);
   }
 
   private void resign(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
     connections.broadcast(auth, notification);
   }
 
   public void makeNoise(String petName, String sound) throws ResponseException {
     try {
       var message = String.format("%s says %s", petName, sound);
-      var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR/*, message*/);
+      var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, message);
       connections.broadcast("", notification);
     } catch (Exception ex) {
       throw new ResponseException(500, ex.getMessage());

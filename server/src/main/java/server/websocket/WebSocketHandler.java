@@ -12,9 +12,10 @@ import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 
 
@@ -41,11 +42,23 @@ public class WebSocketHandler {
     connections.add(auth, session);
     String username = authAccess.getAuthT(auth).username();
     ChessGame game = gameAccess.getGameI(id).game();
-    var message = String.format("%s joined the game", username);
+    String color = "observer";
+    String whiteU = gameAccess.getGameI(id).whiteUsername();
+    String blackU = gameAccess.getGameI(id).blackUsername();
+    if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
+      color = "white";
+    } else if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
+      color = "black";
+    }
+    var message = String.format("%s joined the game as %s", username, color);
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification);
-    var gameString = "\n" + game.getBoard().getBoardString(WHITE);
-    var notification2 = new LoadGameServerMessage(game);
+    //var gameString = "\n" + game.getBoard().getBoardString(WHITE);
+    if (color == "observer") {
+      color = "none";
+    }
+    ChessGame.TeamColor realColor = ChessGame.TeamColor.valueOf(color.toUpperCase());
+    var notification2 = new LoadGameServerMessage(game, realColor);
     connections.broadcast(auth, notification2);
   }
 

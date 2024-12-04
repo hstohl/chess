@@ -3,8 +3,7 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 import static chess.ChessPiece.PieceType.*;
 import static chess.EscapeSequences.*;
 import static java.lang.Math.abs;
@@ -137,6 +136,9 @@ public class ChessBoard {
 
 
   public String getBoardString(ChessGame.TeamColor color) {
+    if (color == NONE) {
+      color = WHITE;
+    }
     String string = "";
     String bgColor;
     String character;

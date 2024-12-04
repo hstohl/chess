@@ -2,6 +2,9 @@ package facade;
 
 import com.google.gson.Gson;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorServerMessage;
+import websocket.messages.LoadGameServerMessage;
+import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -29,9 +32,26 @@ public class WebSocketFacade extends Endpoint {
       this.session.addMessageHandler(new MessageHandler.Whole<String>() {
         @Override
         public void onMessage(String message) {
-          ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+          NotificationServerMessage notiMessage;
+          LoadGameServerMessage loadMessage;
+          ErrorServerMessage errorMessage;
+          LoadGameServerMessage notification = new Gson().fromJson(message, LoadGameServerMessage.class);
+          //System.out.println("We are here!");
+          var notiType = notification.getServerMessageType();
+          if (notiType == ServerMessage.ServerMessageType.NOTIFICATION) {
+            notiMessage = new Gson().fromJson(message, NotificationServerMessage.class);
+            notificationHandler.notify(notiMessage);
+          } else if (notiType == ServerMessage.ServerMessageType.LOAD_GAME) {
+            loadMessage = new Gson().fromJson(message, LoadGameServerMessage.class);
+            notificationHandler.notify(loadMessage);
+          } else if (notiType == ServerMessage.ServerMessageType.ERROR) {
+            errorMessage = new Gson().fromJson(message, ErrorServerMessage.class);
+            notificationHandler.notify(errorMessage);
+          } else {
+            notificationHandler.notify(notification);
+          }
           //System.out.println("Parsed ServerMessage: " + notification.getServerMessageType());
-          notificationHandler.notify(notification);
+          //notificationHandler.notify(notification);
         }
       });
     } catch (DeploymentException | IOException | URISyntaxException ex) {

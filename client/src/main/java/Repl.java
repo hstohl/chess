@@ -1,10 +1,16 @@
 
 import java.util.Scanner;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import facade.NotificationHandler;
 import ui.EscapeSequences.*;
+import websocket.messages.ErrorServerMessage;
+import websocket.messages.LoadGameServerMessage;
+import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
+import static chess.ChessGame.TeamColor.*;
 import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
@@ -44,7 +50,22 @@ public class Repl implements NotificationHandler {
   }
 
   public void notify(ServerMessage notification) {
-    System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
+    System.out.println("\n" + SET_TEXT_COLOR_RED + notification.getMessage());
+    printPrompt();
+  }
+
+  public void notiNotify(NotificationServerMessage notification) {
+    //System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
+    printPrompt();
+  }
+
+  public void loadNotify(LoadGameServerMessage notification) {
+    //System.out.println(notification.getGame().getBoard().getBoardString());
+    printPrompt();
+  }
+
+  public void errorNotify(ErrorServerMessage notification) {
+    //System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
     printPrompt();
   }
 

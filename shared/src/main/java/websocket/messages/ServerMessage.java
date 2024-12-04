@@ -1,5 +1,7 @@
 package websocket.messages;
 
+import chess.ChessGame;
+
 import java.util.Objects;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ServerMessage {
+public abstract class ServerMessage {
   ServerMessageType serverMessageType;
 
   ServerMessage() {
@@ -28,6 +30,8 @@ public class ServerMessage {
   public ServerMessageType getServerMessageType() {
     return this.serverMessageType;
   }
+
+  public abstract String getMessage();
 
   @Override
   public boolean equals(Object o) {

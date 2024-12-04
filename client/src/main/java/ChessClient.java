@@ -25,6 +25,7 @@ public class ChessClient {
   private State state = State.SIGNEDOUT;
   private static ChessBoard board = new ChessBoard();
   private Map<Integer, Integer> gameMap = new HashMap<>();
+  private int currGameId;
 
   public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
     this.notificationHandler = notificationHandler;
@@ -145,6 +146,8 @@ public class ChessClient {
     ws = new WebSocketFacade(serverUrl, notificationHandler);
     ws.connectToGame(myAuth.authToken(), gameID);
 
+    currGameId = gameID;
+
     state = State.INGAME;
 
     board.resetBoard();
@@ -185,9 +188,8 @@ public class ChessClient {
 
   public String makeMove(String... params) throws ResponseException {
     assertJoined();
-    int id = 0;
     ws = new WebSocketFacade(serverUrl, notificationHandler);
-    ws.makeChessMove(myAuth.authToken(), id);
+    ws.makeChessMove(myAuth.authToken(), currGameId);
     return "";
   }
 
@@ -209,9 +211,8 @@ public class ChessClient {
 
   public String leave(String... params) throws ResponseException {
     assertJoined();
-    int id = 0;
     ws = new WebSocketFacade(serverUrl, notificationHandler);
-    ws.leaveGame(myAuth.authToken(), id);
+    ws.leaveGame(myAuth.authToken(), currGameId);
     state = State.SIGNEDIN;
     return "";
   }

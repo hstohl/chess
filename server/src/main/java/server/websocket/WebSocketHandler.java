@@ -3,6 +3,7 @@ package server.websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -89,8 +90,29 @@ public class WebSocketHandler {
   }
 
   private void leave(String auth, int id) throws IOException {
+    GameData game = gameAccess.getGameI(id);
+    String username = authAccess.getAuthT(auth).username();
+    //ChessGame.TeamColor color = NONE;
+    if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
+      GameData newGame = new GameData(game.gameID(), "", game.blackUsername(), game.gameName(), game.game());
+      try {
+        gameAccess.updateGame(newGame);
+      } catch (DataAccessException e) {
+        var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
+        connections.broadcast(auth, errorNotification, id);
+      }
+    } else if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
+      GameData newGame = new GameData(game.gameID(), game.whiteUsername(), "", game.gameName(), game.game());
+      try {
+        gameAccess.updateGame(newGame);
+      } catch (DataAccessException e) {
+        var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
+        connections.broadcast(auth, errorNotification, id);
+      }
+    }
+
     connections.remove(auth);
-    var message = String.format("%s left the shop", auth);
+    var message = String.format("%s left the game", username);
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification, id);
   }

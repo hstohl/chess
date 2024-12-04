@@ -12,8 +12,8 @@ public class ConnectionManager {
   public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
   Gson serializer = new Gson();
 
-  public void add(String visitorName, Session session) {
-    var connection = new Connection(visitorName, session);
+  public void add(String visitorName, Session session, int id) {
+    var connection = new Connection(visitorName, session, id);
     connections.put(visitorName, connection);
   }
 
@@ -21,12 +21,12 @@ public class ConnectionManager {
     connections.remove(visitorName);
   }
 
-  public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
+  public void broadcast(String excludeVisitorName, ServerMessage notification, int gameID) throws IOException {
     var removeList = new ArrayList<Connection>();
     if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
       for (var c : connections.values()) {
         if (c.session.isOpen()) {
-          if (!c.visitorName.equals(excludeVisitorName)) {
+          if (!c.visitorName.equals(excludeVisitorName) && c.id == gameID) {
             c.send(serializer.toJson(notification));
           }
         } else {

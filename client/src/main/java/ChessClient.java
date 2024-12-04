@@ -163,6 +163,9 @@ public class ChessClient {
       throw new ResponseException(400, "Expected <ID>");
     }
 
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    ws.connectToGame(myAuth.authToken(), gameID);
+
     board.resetBoard();
     String string = getBoardString(WHITE);
     string = string + "\n\n\n";

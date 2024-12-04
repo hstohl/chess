@@ -39,7 +39,7 @@ public class WebSocketHandler {
   }
 
   private void connect(String auth, int id, Session session) throws IOException {
-    connections.add(auth, session);
+    connections.add(auth, session, id);
     String username = authAccess.getAuthT(auth).username();
     ChessGame game = gameAccess.getGameI(id).game();
     String color = "observer";
@@ -52,44 +52,35 @@ public class WebSocketHandler {
     }
     var message = String.format("%s joined the game as %s", username, color);
     var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification);
+    connections.broadcast(auth, notification, id);
     //var gameString = "\n" + game.getBoard().getBoardString(WHITE);
     if (color == "observer") {
       color = "none";
     }
     ChessGame.TeamColor realColor = ChessGame.TeamColor.valueOf(color.toUpperCase());
     var notification2 = new LoadGameServerMessage(game, realColor);
-    connections.broadcast(auth, notification2);
+    connections.broadcast(auth, notification2, id);
   }
 
   private void makeMove(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
     var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification);
+    connections.broadcast(auth, notification, id);
   }
 
   private void leave(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
     var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification);
+    connections.broadcast(auth, notification, id);
   }
 
   private void resign(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
     var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification);
+    connections.broadcast(auth, notification, id);
   }
 
-  public void makeNoise(String petName, String sound) throws ResponseException {
-    try {
-      var message = String.format("%s says %s", petName, sound);
-      var notification = new NotificationServerMessage(message);
-      connections.broadcast("", notification);
-    } catch (Exception ex) {
-      throw new ResponseException(500, ex.getMessage());
-    }
-  }
 }

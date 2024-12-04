@@ -36,7 +36,6 @@ public class WebSocketFacade extends Endpoint {
           LoadGameServerMessage loadMessage;
           ErrorServerMessage errorMessage;
           LoadGameServerMessage notification = new Gson().fromJson(message, LoadGameServerMessage.class);
-          //System.out.println("We are here!");
           var notiType = notification.getServerMessageType();
           if (notiType == ServerMessage.ServerMessageType.NOTIFICATION) {
             notiMessage = new Gson().fromJson(message, NotificationServerMessage.class);

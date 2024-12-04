@@ -64,6 +64,7 @@ public class UserDatabaseAccess implements DataAccess {
               `blackUsername` varchar(256),
               `gameName` varchar(45) NOT NULL,
               `chessGame` TEXT DEFAULT NULL,
+              isOver BOOLEAN DEFAULT FALSE,
               PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,

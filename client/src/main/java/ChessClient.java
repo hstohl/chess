@@ -221,9 +221,8 @@ public class ChessClient {
 
   public String resign(String... params) throws ResponseException {
     assertJoined();
-    int id = 0;
     ws = new WebSocketFacade(serverUrl, notificationHandler);
-    ws.resignGame(myAuth.authToken(), id);
+    ws.resignGame(myAuth.authToken(), currGameId);
     return "";
   }
 

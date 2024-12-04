@@ -118,10 +118,33 @@ public class WebSocketHandler {
   }
 
   private void resign(String auth, int id) throws IOException {
-    connections.remove(auth);
-    var message = String.format("%s left the shop", auth);
+    String username = authAccess.getAuthT(auth).username();
+    GameData game = gameAccess.getGameI(id);
+
+    if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername()) ||
+            Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
+      if (game.isOver()) {
+        var errorNotification = new ErrorServerMessage("You cannot resign after the game is over.");
+        connections.broadcast(auth, errorNotification, id);
+        return;
+      }
+      GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), true);
+      try {
+        gameAccess.updateGame(newGame);
+      } catch (DataAccessException e) {
+        var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
+        connections.broadcast(auth, errorNotification, id);
+      }
+      var message = String.format("%s has resigned. The game is over.", username);
+      var notification = new NotificationServerMessage(message);
+      connections.broadcastAll(notification, id);
+    } else {
+      var errorNotification = new ErrorServerMessage("You cannot resign if you are not a player.");
+      connections.broadcast(auth, errorNotification, id);
+    }
+    /*var message = String.format("%s has resigned", username);
     var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification, id);
+    connections.broadcast(auth, notification, id);*/
   }
 
 }

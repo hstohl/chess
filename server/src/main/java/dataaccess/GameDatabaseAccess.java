@@ -17,7 +17,7 @@ public class GameDatabaseAccess implements GameDataAccess {
 
   public GameData getGame(String gameName) {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game WHERE gameName = ?";
+      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame, isOver FROM game WHERE gameName = ?";
       try (var ps = conn.prepareStatement(statement)) {
         ps.setString(1, gameName);
         try (var rs = ps.executeQuery()) {
@@ -34,15 +34,15 @@ public class GameDatabaseAccess implements GameDataAccess {
   }
 
   public void addGame(GameData newGame) throws DataAccessException {
-    var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?, ?)";
+    var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame, isOver) VALUES (?, ?, ?, ?, ?, ?)";
 
     executeUpdate(statement, newGame.gameID(), newGame.whiteUsername(), newGame.blackUsername(),
-            newGame.gameName(), serializer.toJson(newGame.game()));
+            newGame.gameName(), serializer.toJson(newGame.game()), newGame.isOver());
   }
 
   public GameData getGameI(int id) {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game WHERE gameID = ?";
+      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame, isOver FROM game WHERE gameID = ?";
       try (var ps = conn.prepareStatement(statement)) {
         ps.setInt(1, id);
         try (var rs = ps.executeQuery()) {
@@ -60,10 +60,10 @@ public class GameDatabaseAccess implements GameDataAccess {
 
   public void updateGame(GameData updatedGame) throws DataAccessException {
     var statement1 = "DELETE FROM game WHERE gameID=?";
-    var statement2 = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?, ?)";
+    var statement2 = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame, isOver) VALUES (?, ?, ?, ?, ?, ?)";
     executeUpdate(statement1, updatedGame.gameID());
     executeUpdate(statement2, updatedGame.gameID(), updatedGame.whiteUsername(), updatedGame.blackUsername(),
-            updatedGame.gameName(), serializer.toJson(updatedGame.game()));
+            updatedGame.gameName(), serializer.toJson(updatedGame.game()), updatedGame.isOver());
   }
 
   public Collection<GameDataMini> listGames() throws DataAccessException {
@@ -94,9 +94,11 @@ public class GameDatabaseAccess implements GameDataAccess {
 
   private GameData readGame(ResultSet rs) throws SQLException {
     ChessGame game = serializer.fromJson(rs.getString("chessGame"), ChessGame.class);
+    boolean isOver = rs.getBoolean("isOver");
     return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"),
-            rs.getString("gameName"), game);
+            rs.getString("gameName"), game, isOver);
   }
+
 
   private GameDataMini readSmallGame(ResultSet rs) throws SQLException {
     return new GameDataMini(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"),
@@ -112,6 +114,8 @@ public class GameDatabaseAccess implements GameDataAccess {
             ps.setString(i + 1, p);
           } else if (param instanceof Integer p) {
             ps.setInt(i + 1, p);
+          } else if (param instanceof Boolean p) {
+            ps.setBoolean(i + 1, p);
           } else if (param == null) {
             ps.setNull(i + 1, Types.VARCHAR);
           }

@@ -73,6 +73,11 @@ public class WebSocketHandler {
   }
 
   private void makeMove(String auth, int id) throws IOException {
+    if (isNull(authAccess.getAuthT(auth))) {
+      var errorNotification = new ErrorServerMessage("Bad auth token.");
+      connections.broadcast(auth, errorNotification, id);
+      return;
+    }
     //check valid move
 
     //make move and update database

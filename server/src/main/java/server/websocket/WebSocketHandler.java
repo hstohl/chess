@@ -7,6 +7,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.Timer;
 
 import static chess.ChessGame.TeamColor.*;
+import static java.util.Objects.isNull;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 
 
@@ -40,6 +42,14 @@ public class WebSocketHandler {
 
   private void connect(String auth, int id, Session session) throws IOException {
     connections.add(auth, session, id);
+    if (isNull(authAccess.getAuthT(auth))) {
+      var errorNotification = new ErrorServerMessage("Bad auth token.");
+      connections.broadcast(auth, errorNotification, id);
+    }
+    if (isNull(gameAccess.getGameI(id))) {
+      var errorNotification = new ErrorServerMessage("Bad game ID.");
+      connections.broadcast(auth, errorNotification, id);
+    }
     String username = authAccess.getAuthT(auth).username();
     ChessGame game = gameAccess.getGameI(id).game();
     String color = "observer";

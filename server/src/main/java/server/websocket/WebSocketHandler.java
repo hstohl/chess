@@ -1,6 +1,8 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDataAccess;
+import dataaccess.AuthDatabaseAccess;
 import dataaccess.DataAccess;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -11,11 +13,14 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.Timer;
 
+import static websocket.messages.ServerMessage.ServerMessageType.*;
+
 
 @WebSocket
 public class WebSocketHandler {
 
   private final ConnectionManager connections = new ConnectionManager();
+  private final AuthDataAccess authAccess = new AuthDatabaseAccess();
 
   @OnWebSocketMessage
   public void onMessage(Session session, String message) throws IOException {
@@ -30,29 +35,30 @@ public class WebSocketHandler {
 
   private void connect(String auth, int id, Session session) throws IOException {
     connections.add(auth, session);
-    var message = String.format("%s is in the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
+    //String username = authAccess.getAuthT(auth).username();
+    var message = String.format("%s joined the game", auth);
+    var notification = new ServerMessage(NOTIFICATION, message);
     connections.broadcast(auth, notification);
   }
 
   private void makeMove(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
+    var notification = new ServerMessage(LOAD_GAME, message);
     connections.broadcast(auth, notification);
   }
 
   private void leave(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+    var notification = new ServerMessage(NOTIFICATION, message);
     connections.broadcast(auth, notification);
   }
 
   private void resign(String auth, int id) throws IOException {
     connections.remove(auth);
     var message = String.format("%s left the shop", auth);
-    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+    var notification = new ServerMessage(NOTIFICATION, message);
     connections.broadcast(auth, notification);
   }
 

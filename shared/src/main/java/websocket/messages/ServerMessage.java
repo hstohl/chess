@@ -8,6 +8,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
+
 public class ServerMessage {
   ServerMessageType serverMessageType;
   String message;
@@ -25,6 +26,10 @@ public class ServerMessage {
 
   public ServerMessageType getServerMessageType() {
     return this.serverMessageType;
+  }
+
+  public String getMessage() {
+    return this.message;
   }
 
   @Override

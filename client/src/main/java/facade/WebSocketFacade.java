@@ -30,6 +30,7 @@ public class WebSocketFacade extends Endpoint {
         @Override
         public void onMessage(String message) {
           ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+          //System.out.println("Parsed ServerMessage: " + notification.getServerMessageType());
           notificationHandler.notify(notification);
         }
       });
@@ -41,6 +42,7 @@ public class WebSocketFacade extends Endpoint {
   //Endpoint requires this method, but you don't have to do anything
   @Override
   public void onOpen(Session session, EndpointConfig endpointConfig) {
+    //System.out.println("Client connected: " + session.getId());
   }
 
   public void connectToGame(String authToken, int gameID) throws ResponseException {

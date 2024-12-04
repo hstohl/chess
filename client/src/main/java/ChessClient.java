@@ -382,6 +382,10 @@ public class ChessClient {
     return state == State.SIGNEDIN;
   }
 
+  public boolean isGameplay() {
+    return (state == State.INGAME || state == State.OBSERVING);
+  }
+
   private void assertSignedIn() throws ResponseException {
     if (state == State.SIGNEDOUT) {
       throw new ResponseException(400, "You must sign in.");

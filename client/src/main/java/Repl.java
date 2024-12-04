@@ -44,6 +44,8 @@ public class Repl implements NotificationHandler {
   private void printPrompt() {
     if (client.isSignedIn()) {
       System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_IN] >>> " + SET_TEXT_COLOR_GREEN);
+    } else if (client.isGameplay()) {
+      System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[GAMEPLAY] >>> " + SET_TEXT_COLOR_GREEN);
     } else {
       System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_OUT] >>> " + SET_TEXT_COLOR_GREEN);
     }

@@ -94,7 +94,7 @@ public class WebSocketHandler {
     String username = authAccess.getAuthT(auth).username();
     //ChessGame.TeamColor color = NONE;
     if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
-      GameData newGame = new GameData(game.gameID(), "", game.blackUsername(), game.gameName(), game.game());
+      GameData newGame = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
       try {
         gameAccess.updateGame(newGame);
       } catch (DataAccessException e) {
@@ -102,7 +102,7 @@ public class WebSocketHandler {
         connections.broadcast(auth, errorNotification, id);
       }
     } else if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
-      GameData newGame = new GameData(game.gameID(), game.whiteUsername(), "", game.gameName(), game.game());
+      GameData newGame = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
       try {
         gameAccess.updateGame(newGame);
       } catch (DataAccessException e) {

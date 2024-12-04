@@ -176,7 +176,9 @@ public class ChessClient {
     ws = new WebSocketFacade(serverUrl, notificationHandler);
     ws.connectToGame(myAuth.authToken(), gameID);
 
-    state = State.OBSERVING;
+    currGameId = gameID;
+
+    state = State.INGAME;
 
     board.resetBoard();
     String string = getBoardString(WHITE);

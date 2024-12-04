@@ -8,10 +8,11 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-
 public class ServerMessage {
   ServerMessageType serverMessageType;
-  String message;
+
+  ServerMessage() {
+  }
 
   public enum ServerMessageType {
     LOAD_GAME,
@@ -19,17 +20,13 @@ public class ServerMessage {
     NOTIFICATION
   }
 
-  public ServerMessage(ServerMessageType type, String message) {
+  public ServerMessage(ServerMessageType type) {
     this.serverMessageType = type;
-    this.message = message;
   }
+
 
   public ServerMessageType getServerMessageType() {
     return this.serverMessageType;
-  }
-
-  public String getMessage() {
-    return this.message;
   }
 
   @Override
@@ -47,13 +44,5 @@ public class ServerMessage {
   @Override
   public int hashCode() {
     return Objects.hash(getServerMessageType());
-  }
-
-  @Override
-  public String toString() {
-    return "ServerMessage{" +
-            "type=" + serverMessageType +
-            ", message='" + message + '\'' +
-            '}';
   }
 }

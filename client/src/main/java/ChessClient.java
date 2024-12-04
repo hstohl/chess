@@ -23,7 +23,7 @@ public class ChessClient {
   private final ServerFacade server;
   private final String serverUrl;
   private State state = State.SIGNEDOUT;
-  private ChessBoard board = new ChessBoard();
+  private static ChessBoard board = new ChessBoard();
   private Map<Integer, Integer> gameMap = new HashMap<>();
 
   public ChessClient(String serverUrl, NotificationHandler notificationHandler) {

@@ -45,6 +45,11 @@ public class ChessClient {
         case "create" -> createGame(params);
         case "join" -> joinGame(params);
         case "observe" -> observeGame(params);
+        case "move" -> makeMove(params);
+        case "highlight" -> highlight(params);
+        case "redraw" -> redraw();
+        case "leave" -> leave();
+        case "resign" -> resign();
         case "quit" -> quit();
         default -> help();
       };
@@ -140,6 +145,8 @@ public class ChessClient {
     ws = new WebSocketFacade(serverUrl, notificationHandler);
     ws.connectToGame(myAuth.authToken(), gameID);
 
+    state = State.INGAME;
+
     board.resetBoard();
     String string = getBoardString(WHITE);
     string = string + "\n\n\n";
@@ -166,6 +173,8 @@ public class ChessClient {
     ws = new WebSocketFacade(serverUrl, notificationHandler);
     ws.connectToGame(myAuth.authToken(), gameID);
 
+    state = State.OBSERVING;
+
     board.resetBoard();
     String string = getBoardString(WHITE);
     string = string + "\n\n\n";
@@ -173,6 +182,48 @@ public class ChessClient {
 
     return string;
   }
+
+  public String makeMove(String... params) throws ResponseException {
+    assertJoined();
+    int id = 0;
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    ws.makeChessMove(myAuth.authToken(), id);
+    return "";
+  }
+
+  public String redraw(String... params) throws ResponseException {
+    assertJoined();
+    int id = 0;
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    //ws.redraw(myAuth.authToken(), id);
+    return "";
+  }
+
+  public String highlight(String... params) throws ResponseException {
+    assertJoined();
+    int id = 0;
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    //ws.highlight(myAuth.authToken(), id);
+    return "";
+  }
+
+  public String leave(String... params) throws ResponseException {
+    assertJoined();
+    int id = 0;
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    ws.leaveGame(myAuth.authToken(), id);
+    state = State.SIGNEDIN;
+    return "";
+  }
+
+  public String resign(String... params) throws ResponseException {
+    assertJoined();
+    int id = 0;
+    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    ws.resignGame(myAuth.authToken(), id);
+    return "";
+  }
+
 
   public String getBoardString(ChessGame.TeamColor color) {
     String string = "";
@@ -278,8 +329,9 @@ public class ChessClient {
   }
 
   public String help() {
+    String string = "";
     if (state == State.SIGNEDOUT) {
-      String string = SET_TEXT_COLOR_BLUE + "register <USERNAME> <PASSWORD> <EMAIL> " +
+      string = SET_TEXT_COLOR_BLUE + "register <USERNAME> <PASSWORD> <EMAIL> " +
               SET_TEXT_COLOR_LIGHT_GREY + "- to create an account\n" +
               SET_TEXT_COLOR_BLUE + "login <USERNAME> <PASSWORD> " +
               SET_TEXT_COLOR_LIGHT_GREY + "- to play chess\n" +
@@ -287,20 +339,42 @@ public class ChessClient {
               SET_TEXT_COLOR_LIGHT_GREY + "- playing chess\n" +
               SET_TEXT_COLOR_BLUE + "help " +
               SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
-      return string;
+    } else if (state == State.SIGNEDIN) {
+      string = SET_TEXT_COLOR_BLUE + "create <NAME> " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- a game\n" +
+              SET_TEXT_COLOR_BLUE + "list " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- games\n" +
+              SET_TEXT_COLOR_BLUE + "join <ID> [WHITE|BLACK] " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- a game\n" +
+              SET_TEXT_COLOR_BLUE + "observe ‹ID> " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- aa game\n" +
+              SET_TEXT_COLOR_BLUE + "logout " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- when you are done\n" +
+              SET_TEXT_COLOR_BLUE + "help " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
+    } else if (state == State.INGAME) {
+      string = SET_TEXT_COLOR_BLUE + "redraw " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- the chess board\n" +
+              SET_TEXT_COLOR_BLUE + "leave " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
+              SET_TEXT_COLOR_BLUE + "move {move} " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- a chess piece\n" +
+              SET_TEXT_COLOR_BLUE + "resign " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
+              SET_TEXT_COLOR_BLUE + "highlight <position>" +
+              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves\n" +
+              SET_TEXT_COLOR_BLUE + "help " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
+    } else if (state == State.OBSERVING) {
+      string = SET_TEXT_COLOR_BLUE + "redraw " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- the chess board\n" +
+              SET_TEXT_COLOR_BLUE + "leave " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
+              SET_TEXT_COLOR_BLUE + "highlight <position>" +
+              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves\n" +
+              SET_TEXT_COLOR_BLUE + "help " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     }
-    String string = SET_TEXT_COLOR_BLUE + "create <NAME> " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- a game\n" +
-            SET_TEXT_COLOR_BLUE + "list " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- games\n" +
-            SET_TEXT_COLOR_BLUE + "join <ID> [WHITE|BLACK] " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- a game\n" +
-            SET_TEXT_COLOR_BLUE + "observe ‹ID> " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- aa game\n" +
-            SET_TEXT_COLOR_BLUE + "logout " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- when you are done\n" +
-            SET_TEXT_COLOR_BLUE + "help " +
-            SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     return string;
   }
 
@@ -310,13 +384,21 @@ public class ChessClient {
 
   private void assertSignedIn() throws ResponseException {
     if (state == State.SIGNEDOUT) {
-      throw new ResponseException(400, "You must sign in");
+      throw new ResponseException(400, "You must sign in.");
+    } else if (state == State.INGAME || state == State.OBSERVING) {
+      throw new ResponseException(400, "You must leave game first.");
     }
   }
 
   private void assertSignedOut() throws ResponseException {
-    if (state == State.SIGNEDIN) {
+    if (state != State.SIGNEDOUT) {
       throw new ResponseException(400, "Logout before performing this action.");
+    }
+  }
+
+  private void assertJoined() throws ResponseException {
+    if (state != State.INGAME) {
+      throw new ResponseException(400, "You must join a game before performing this action.");
     }
   }
 }

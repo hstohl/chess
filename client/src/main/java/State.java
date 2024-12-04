@@ -1,4 +1,6 @@
 public enum State {
   SIGNEDOUT,
-  SIGNEDIN
+  SIGNEDIN,
+  INGAME,
+  OBSERVING
 }

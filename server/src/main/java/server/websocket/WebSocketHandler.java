@@ -63,8 +63,12 @@ public class WebSocketHandler {
   }
 
   private void makeMove(String auth, int id) throws IOException {
-    connections.remove(auth);
-    var message = String.format("%s left the shop", auth);
+    //check valid move
+
+    //make move and update database
+
+    String username = authAccess.getAuthT(auth).username();
+    var message = String.format("%s made a move", username);
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification, id);
   }

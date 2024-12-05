@@ -1,7 +1,4 @@
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import facade.NotificationHandler;
 import facade.WebSocketFacade;
 import model.*;
@@ -23,6 +20,7 @@ public class ChessClient {
   private final ServerFacade server;
   private final String serverUrl;
   private State state = State.SIGNEDOUT;
+  private ChessGame theGame = new ChessGame();
   private static ChessBoard board = new ChessBoard();
   private Map<Integer, Integer> gameMap = new HashMap<>();
   private int currGameId;
@@ -190,8 +188,43 @@ public class ChessClient {
 
   public String makeMove(String... params) throws ResponseException {
     assertJoined();
-    ws = new WebSocketFacade(serverUrl, notificationHandler);
-    ws.makeChessMove(myAuth.authToken(), currGameId);
+    if ((params.length == 2 || params.length == 3) &&
+            params[0].length() == 2 && params[1].length() == 2 && // Ensure start and end positions are exactly two characters
+            params[0].charAt(0) >= 'a' && params[0].charAt(0) <= 'h' && // Start file
+            params[0].charAt(1) >= '1' && params[0].charAt(1) <= '8' && // Start rank
+            params[1].charAt(0) >= 'a' && params[1].charAt(0) <= 'h' && // End file
+            params[1].charAt(1) >= '1' && params[1].charAt(1) <= '8' && // End rank
+            (params.length != 3 || (
+                    params[0].charAt(1) == '7' && params[1].charAt(1) == '8' || // White pawn promotion
+                            params[0].charAt(1) == '2' && params[1].charAt(1) == '1'    // Black pawn promotion
+            )) &&
+            (params.length != 3 || isValidPromotionPiece(params[2]))) {
+      //System.out.println("Col Start: " + (params[0].charAt(0) - 'a' + 1) + ". Row Start: " + params[0].charAt(1));
+      //System.out.println("Col End: " + (params[1].charAt(0) - 'a' + 1) + ". Row End: " + params[1].charAt(1));
+      ChessPosition start = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - 'a' + 1);
+      ChessPosition end = new ChessPosition(params[1].charAt(1) - '0', params[1].charAt(0) - 'a' + 1);
+      ChessMove move = new ChessMove(start, end, null);
+      if (params.length == 3) {
+        ChessPiece.PieceType piece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+        move = new ChessMove(start, end, piece);
+      }
+
+      ws = new WebSocketFacade(serverUrl, notificationHandler);
+      ws.makeChessMove(myAuth.authToken(), currGameId);
+      try {
+        theGame.makeMove(move);
+      } catch (InvalidMoveException e) {
+        throw new ResponseException(400, "Please enter a valid move.");
+      }
+
+
+    } else {
+      throw new ResponseException(400, "Expected <column><row> <column><row>. Ensure your columns and rows are correct. " +
+              "If you are promoting, ensure you entered a promotion piece.");
+    }
+
+    //ws = new WebSocketFacade(serverUrl, notificationHandler);
+    //ws.makeChessMove(myAuth.authToken(), currGameId);
     return "";
   }
 
@@ -205,7 +238,7 @@ public class ChessClient {
   public String highlight(String... params) throws ResponseException {
     assertJoined();
     int id = 0;
-    ws = new WebSocketFacade(serverUrl, notificationHandler);
+    //ws = new WebSocketFacade(serverUrl, notificationHandler);
     //ws.highlight(myAuth.authToken(), id);
     return "";
   }
@@ -225,12 +258,20 @@ public class ChessClient {
     return "";
   }
 
+  private static boolean isValidPromotionPiece(String piece) {
+    return piece.equalsIgnoreCase("queen") ||
+            piece.equalsIgnoreCase("rook") ||
+            piece.equalsIgnoreCase("bishop") ||
+            piece.equalsIgnoreCase("knight");
+  }
+
 
   public String getBoardString(ChessGame.TeamColor color) {
     String string = "";
     String bgColor;
     String character;
     String txtColor;
+
     for (int i = 0; i < 10; ++i) {
       for (int j = 0; j < 10; ++j) {
         bgColor = SET_BG_COLOR_BLACK;

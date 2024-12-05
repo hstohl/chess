@@ -193,12 +193,15 @@ public class ChessBoard {
   private String piecesOnBoard(int i, int j, ChessGame.TeamColor color) {
     String txtColor = "";
     String character = "";
-    int dif = 0;
+    /*int dif = 0;
     if (color == WHITE) {
       dif = 9;
-    }
+    }*/
+    int boardRow = color == WHITE ? 9 - i : i; // Map rows based on color perspective
+    int boardCol = color == WHITE ? j : 9 - j; // Map columns based on color perspective
     if (i != 0 && i != 9 && j != 0 && j != 9) {
-      ChessPiece piece = this.getPiece(new ChessPosition(abs(dif - i), abs(j - dif)));
+      //ChessPiece piece = this.getPiece(new ChessPosition(abs(dif - i), abs(j - dif)));
+      ChessPiece piece = this.getPiece(new ChessPosition(boardRow, boardCol));
       if (piece != null) {
         if (piece.getTeamColor() == WHITE) {
           txtColor = SET_TEXT_COLOR_LIGHT_GREY;

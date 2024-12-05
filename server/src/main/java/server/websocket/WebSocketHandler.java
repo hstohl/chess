@@ -41,7 +41,7 @@ public class WebSocketHandler {
       case MAKE_MOVE -> {
         // Deserialize as MakeMoveCommand to get the ChessMove
         MakeMoveCommand moveAction = new Gson().fromJson(message, MakeMoveCommand.class);
-        makeMove(moveAction.getAuthToken(), moveAction.getGameID(), moveAction.getMove());
+        makeMove(moveAction.getAuthToken(), moveAction.getGameID(), moveAction.getMove(), session);
       }
       case LEAVE -> leave(action.getAuthToken(), action.getGameID());
       case RESIGN -> resign(action.getAuthToken(), action.getGameID());
@@ -54,10 +54,12 @@ public class WebSocketHandler {
     if (isNull(authAccess.getAuthT(auth))) {
       var errorNotification = new ErrorServerMessage("Bad auth token.");
       connections.broadcast(auth, errorNotification, id);
+      return;
     }
     if (isNull(gameAccess.getGameI(id))) {
       var errorNotification = new ErrorServerMessage("Bad game ID.");
       connections.broadcast(auth, errorNotification, id);
+      return;
     }
     String username = authAccess.getAuthT(auth).username();
     ChessGame game = gameAccess.getGameI(id).game();
@@ -81,19 +83,36 @@ public class WebSocketHandler {
     connections.broadcast(auth, notification2, id);
   }
 
-  private void makeMove(String auth, int id, ChessMove move) throws IOException {
+  private void makeMove(String auth, int id, ChessMove move, Session session) throws IOException {
     if (isNull(authAccess.getAuthT(auth))) {
-      var errorNotification = new ErrorServerMessage("Bad auth token.");
+      //System.out.println("I was given a bad auth in make moves.");
+      connections.add(auth, session, id);
+      var errorNotification = new ErrorServerMessage("This is a bad auth token.");
       connections.broadcast(auth, errorNotification, id);
+      //System.out.println("We supposedly did something about it.");
       return;
     }
     GameData game = gameAccess.getGameI(id);
     String username = authAccess.getAuthT(auth).username();
     ChessGame.TeamColor color = NONE;
+    ChessGame.TeamColor oppColor = NONE;
+    String myName = "";
+    String oppName = "";
     if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
       color = WHITE;
+      oppColor = BLACK;
+      myName = gameAccess.getGameI(id).whiteUsername();
+      oppName = gameAccess.getGameI(id).blackUsername();
     } else if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
       color = BLACK;
+      oppColor = WHITE;
+      myName = gameAccess.getGameI(id).blackUsername();
+      oppName = gameAccess.getGameI(id).whiteUsername();
+    }
+    if (game.isOver()) {
+      var errorNotification = new ErrorServerMessage("You cannot make a move once the game has ended.");
+      connections.broadcast(auth, errorNotification, id);
+      return;
     }
     if (color == NONE) {
       var errorNotification = new ErrorServerMessage("You can only make moves as a player.");
@@ -122,16 +141,34 @@ public class WebSocketHandler {
     var notification1 = new LoadGameServerMessage(game.game(), color);
     connections.broadcastAll(notification1, game.gameID());
 
-    //System.out.println("After broadcast in handler.");
     String movePretty = game.game().getBoard().getPiece(move.getEndPosition()).getPieceType().toString().toLowerCase()
             + " from " + move.getStartPosition().prettyToString() + " to " + move.getEndPosition().prettyToString();
 
     var message = String.format("%s made the move: %s", username, movePretty);
 
-    //System.out.println("Before next broadcast in handler.");
-    var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification, id);
-    //System.out.println("After second broadcast in handler. (This means your broadcast thing is screwy.)");
+    var notification2 = new NotificationServerMessage(message);
+    connections.broadcast(auth, notification2, id);
+
+    //check for check, checkmate, and stalemate and send notifications and update game if necessary
+    if (game.game().isInCheckmate(oppColor)) {
+      message = String.format("%s has been checkmated. The game is over. %s wins.", oppName, myName);
+      var notification3 = new NotificationServerMessage(message);
+      connections.broadcastAll(notification3, game.gameID());
+      setGameOver(game, auth, id);
+      return;
+    }
+    if (game.game().isInStalemate(oppColor)) {
+      message = String.format("Stalemate. The game is over.", oppName);
+      var notification3 = new NotificationServerMessage(message);
+      connections.broadcastAll(notification3, game.gameID());
+      setGameOver(game, auth, id);
+      return;
+    }
+    if (game.game().isInCheck(oppColor)) {
+      message = String.format("%s is in check", oppName);
+      var notification3 = new NotificationServerMessage(message);
+      connections.broadcastAll(notification3, game.gameID());
+    }
   }
 
   private void leave(String auth, int id) throws IOException {
@@ -173,13 +210,7 @@ public class WebSocketHandler {
         connections.broadcast(auth, errorNotification, id);
         return;
       }
-      GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), true);
-      try {
-        gameAccess.updateGame(newGame);
-      } catch (DataAccessException e) {
-        var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
-        connections.broadcast(auth, errorNotification, id);
-      }
+      setGameOver(game, auth, id);
       var message = String.format("%s has resigned. The game is over.", username);
       var notification = new NotificationServerMessage(message);
       connections.broadcastAll(notification, id);
@@ -203,6 +234,16 @@ public class WebSocketHandler {
       connections.broadcast(auth, notification2, id);
     }
 
+  }
+
+  private void setGameOver(GameData game, String auth, int id) throws IOException {
+    GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), true);
+    try {
+      gameAccess.updateGame(newGame);
+    } catch (DataAccessException e) {
+      var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
+      connections.broadcast(auth, errorNotification, id);
+    }
   }
 
 }

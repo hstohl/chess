@@ -58,4 +58,8 @@ public class ChessPosition {
   public int getColumn() {
     return col;
   }
+
+  public String prettyToString() {
+    return "" + (char) (col + 'a' - 1) + row;
+  }
 }

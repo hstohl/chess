@@ -1,12 +1,15 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
@@ -35,7 +38,11 @@ public class WebSocketHandler {
     UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
     switch (action.getCommandType()) {
       case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
-      case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
+      case MAKE_MOVE -> {
+        // Deserialize as MakeMoveCommand to get the ChessMove
+        MakeMoveCommand moveAction = new Gson().fromJson(message, MakeMoveCommand.class);
+        makeMove(moveAction.getAuthToken(), moveAction.getGameID(), moveAction.getMove());
+      }
       case LEAVE -> leave(action.getAuthToken(), action.getGameID());
       case RESIGN -> resign(action.getAuthToken(), action.getGameID());
       case REDRAW -> redraw(action.getAuthToken(), action.getGameID());
@@ -74,20 +81,57 @@ public class WebSocketHandler {
     connections.broadcast(auth, notification2, id);
   }
 
-  private void makeMove(String auth, int id) throws IOException {
+  private void makeMove(String auth, int id, ChessMove move) throws IOException {
     if (isNull(authAccess.getAuthT(auth))) {
       var errorNotification = new ErrorServerMessage("Bad auth token.");
       connections.broadcast(auth, errorNotification, id);
       return;
     }
-    //check valid move
-
-    //make move and update database
-
+    GameData game = gameAccess.getGameI(id);
     String username = authAccess.getAuthT(auth).username();
-    var message = String.format("%s made a move", username);
+    ChessGame.TeamColor color = NONE;
+    if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
+      color = WHITE;
+    } else if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
+      color = BLACK;
+    }
+    if (color == NONE) {
+      var errorNotification = new ErrorServerMessage("You can only make moves as a player.");
+      connections.broadcast(auth, errorNotification, id);
+      return;
+    } else if (game.game().getTeamTurn() != color) {
+      var errorNotification = new ErrorServerMessage("You can only make moves on your turn.");
+      connections.broadcast(auth, errorNotification, id);
+      return;
+    }
+    //check valid move and make move and update database
+    try {
+      game.game().makeMove(move);
+      gameAccess.updateGame(game);
+    } catch (InvalidMoveException e) {
+      var errorNotification = new ErrorServerMessage("Invalid move.");
+      connections.broadcast(auth, errorNotification, id);
+      return;
+    } catch (DataAccessException e) {
+      var errorNotification = new ErrorServerMessage("Yeah the database wants to kill itself.");
+      connections.broadcast(auth, errorNotification, id);
+    }
+
+    //tell the people what happened
+
+    var notification1 = new LoadGameServerMessage(game.game(), color);
+    connections.broadcastAll(notification1, game.gameID());
+
+    //System.out.println("After broadcast in handler.");
+    String movePretty = game.game().getBoard().getPiece(move.getEndPosition()).getPieceType().toString().toLowerCase()
+            + " from " + move.getStartPosition().prettyToString() + " to " + move.getEndPosition().prettyToString();
+
+    var message = String.format("%s made the move: %s", username, movePretty);
+
+    //System.out.println("Before next broadcast in handler.");
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification, id);
+    //System.out.println("After second broadcast in handler. (This means your broadcast thing is screwy.)");
   }
 
   private void leave(String auth, int id) throws IOException {

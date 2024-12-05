@@ -210,13 +210,12 @@ public class ChessClient {
       }
 
       ws = new WebSocketFacade(serverUrl, notificationHandler);
-      ws.makeChessMove(myAuth.authToken(), currGameId);
-      try {
+      ws.makeChessMove(myAuth.authToken(), currGameId, move);
+      /*try {
         theGame.makeMove(move);
       } catch (InvalidMoveException e) {
         throw new ResponseException(400, "Please enter a valid move.");
-      }
-
+      }*/
 
     } else {
       throw new ResponseException(400, "Expected <column><row> <column><row>. Ensure your columns and rows are correct. " +

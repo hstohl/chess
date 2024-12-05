@@ -258,8 +258,15 @@ public class ChessClient {
 
   public String resign(String... params) throws ResponseException {
     assertJoined();
-    ws = new WebSocketFacade(serverUrl, notificationHandler);
-    ws.resignGame(myAuth.authToken(), currGameId);
+    Scanner myObj = new Scanner(System.in);
+    System.out.println("Are you sure you want to resign? [yes|no]");
+    String answer = myObj.nextLine();
+    if (Objects.equals(answer, "yes")) {
+      ws = new WebSocketFacade(serverUrl, notificationHandler);
+      ws.resignGame(myAuth.authToken(), currGameId);
+    } else {
+      System.out.println("resignation cancelled");
+    }
     return "";
   }
 

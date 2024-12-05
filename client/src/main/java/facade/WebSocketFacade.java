@@ -102,4 +102,13 @@ public class WebSocketFacade extends Endpoint {
     }
   }
 
+  public void redraw(String authToken, int gameID) throws ResponseException {
+    try {
+      var action = new UserGameCommand(UserGameCommand.CommandType.REDRAW, authToken, gameID);
+      this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    } catch (IOException ex) {
+      throw new ResponseException(500, ex.getMessage());
+    }
+  }
+
 }

@@ -197,9 +197,8 @@ public class ChessClient {
 
   public String redraw(String... params) throws ResponseException {
     assertJoined();
-    int id = 0;
     ws = new WebSocketFacade(serverUrl, notificationHandler);
-    //ws.redraw(myAuth.authToken(), id);
+    ws.redraw(myAuth.authToken(), currGameId);
     return "";
   }
 

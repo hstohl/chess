@@ -38,6 +38,7 @@ public class WebSocketHandler {
       case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
       case LEAVE -> leave(action.getAuthToken(), action.getGameID());
       case RESIGN -> resign(action.getAuthToken(), action.getGameID());
+      case REDRAW -> redraw(action.getAuthToken(), action.getGameID());
     }
   }
 
@@ -145,6 +146,19 @@ public class WebSocketHandler {
     /*var message = String.format("%s has resigned", username);
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification, id);*/
+  }
+
+  private void redraw(String auth, int id) throws IOException {
+    String username = authAccess.getAuthT(auth).username();
+    ChessGame game = gameAccess.getGameI(id).game();
+    if (Objects.equals(username, gameAccess.getGameI(id).blackUsername())) {
+      var notification2 = new LoadGameServerMessage(game, BLACK);
+      connections.broadcast(auth, notification2, id);
+    } else {
+      var notification2 = new LoadGameServerMessage(game, WHITE);
+      connections.broadcast(auth, notification2, id);
+    }
+
   }
 
 }

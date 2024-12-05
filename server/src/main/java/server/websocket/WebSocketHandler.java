@@ -39,7 +39,6 @@ public class WebSocketHandler {
     switch (action.getCommandType()) {
       case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
       case MAKE_MOVE -> {
-        // Deserialize as MakeMoveCommand to get the ChessMove
         MakeMoveCommand moveAction = new Gson().fromJson(message, MakeMoveCommand.class);
         makeMove(moveAction.getAuthToken(), moveAction.getGameID(), moveAction.getMove(), session);
       }
@@ -74,7 +73,6 @@ public class WebSocketHandler {
     var message = String.format("%s joined the game as %s", username, color);
     var notification = new NotificationServerMessage(message);
     connections.broadcast(auth, notification, id);
-    //var gameString = "\n" + game.getBoard().getBoardString(WHITE);
     if (color == "observer") {
       color = "none";
     }
@@ -85,11 +83,9 @@ public class WebSocketHandler {
 
   private void makeMove(String auth, int id, ChessMove move, Session session) throws IOException {
     if (isNull(authAccess.getAuthT(auth))) {
-      //System.out.println("I was given a bad auth in make moves.");
       connections.add(auth, session, id);
       var errorNotification = new ErrorServerMessage("This is a bad auth token.");
       connections.broadcast(auth, errorNotification, id);
-      //System.out.println("We supposedly did something about it.");
       return;
     }
     GameData game = gameAccess.getGameI(id);
@@ -137,7 +133,6 @@ public class WebSocketHandler {
     }
 
     //tell the people what happened
-
     var notification1 = new LoadGameServerMessage(game.game(), color);
     connections.broadcastAll(notification1, game.gameID());
 
@@ -174,7 +169,6 @@ public class WebSocketHandler {
   private void leave(String auth, int id) throws IOException {
     GameData game = gameAccess.getGameI(id);
     String username = authAccess.getAuthT(auth).username();
-    //ChessGame.TeamColor color = NONE;
     if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
       GameData newGame = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
       try {
@@ -218,9 +212,6 @@ public class WebSocketHandler {
       var errorNotification = new ErrorServerMessage("You cannot resign if you are not a player.");
       connections.broadcast(auth, errorNotification, id);
     }
-    /*var message = String.format("%s has resigned", username);
-    var notification = new NotificationServerMessage(message);
-    connections.broadcast(auth, notification, id);*/
   }
 
   private void redraw(String auth, int id) throws IOException {

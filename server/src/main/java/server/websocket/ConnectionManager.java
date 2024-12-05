@@ -63,15 +63,13 @@ public class ConnectionManager {
 
   public void broadcastAll(ServerMessage notification, int gameID) throws IOException {
     var removeList = new ArrayList<Connection>();
-    if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-      for (var c : connections.values()) {
-        if (c.session.isOpen()) {
-          if (c.id == gameID) {
-            c.send(serializer.toJson(notification));
-          }
-        } else {
-          removeList.add(c);
+    for (var c : connections.values()) {
+      if (c.session.isOpen()) {
+        if (c.id == gameID) {
+          c.send(serializer.toJson(notification));
         }
+      } else {
+        removeList.add(c);
       }
     }
 

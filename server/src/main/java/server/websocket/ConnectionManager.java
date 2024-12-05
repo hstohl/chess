@@ -33,16 +33,6 @@ public class ConnectionManager {
           removeList.add(c);
         }
       }
-    } else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-      for (var c : connections.values()) {
-        if (c.session.isOpen()) {
-          if (c.visitorName.equals(excludeVisitorName)) {
-            c.send(serializer.toJson(notification));
-          }
-        } else {
-          removeList.add(c);
-        }
-      }
     } else {
       for (var c : connections.values()) {
         if (c.session.isOpen()) {

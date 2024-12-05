@@ -148,12 +148,7 @@ public class ChessClient {
 
     state = State.INGAME;
 
-    board.resetBoard();
-    String string = getBoardString(WHITE);
-    string = string + "\n\n\n";
-    string = string + getBoardString(BLACK);
-
-    return string;
+    return "";
   }
 
   public String observeGame(String... params) throws ResponseException {
@@ -178,12 +173,7 @@ public class ChessClient {
 
     state = State.INGAME;
 
-    board.resetBoard();
-    String string = getBoardString(WHITE);
-    string = string + "\n\n\n";
-    string = string + getBoardString(BLACK);
-
-    return string;
+    return "";
   }
 
   public String makeMove(String... params) throws ResponseException {
@@ -211,19 +201,12 @@ public class ChessClient {
 
       ws = new WebSocketFacade(serverUrl, notificationHandler);
       ws.makeChessMove(myAuth.authToken(), currGameId, move);
-      /*try {
-        theGame.makeMove(move);
-      } catch (InvalidMoveException e) {
-        throw new ResponseException(400, "Please enter a valid move.");
-      }*/
 
     } else {
       throw new ResponseException(400, "Expected <column><row> <column><row>. Ensure your columns and rows are correct. " +
               "If you are promoting, ensure you entered a promotion piece.");
     }
 
-    //ws = new WebSocketFacade(serverUrl, notificationHandler);
-    //ws.makeChessMove(myAuth.authToken(), currGameId);
     return "";
   }
 
@@ -262,111 +245,6 @@ public class ChessClient {
             piece.equalsIgnoreCase("rook") ||
             piece.equalsIgnoreCase("bishop") ||
             piece.equalsIgnoreCase("knight");
-  }
-
-
-  public String getBoardString(ChessGame.TeamColor color) {
-    String string = "";
-    String bgColor;
-    String character;
-    String txtColor;
-
-    for (int i = 0; i < 10; ++i) {
-      for (int j = 0; j < 10; ++j) {
-        bgColor = SET_BG_COLOR_BLACK;
-        character = EMPTY;
-        txtColor = SET_TEXT_COLOR_BLACK;
-        //make board
-        if (i == 0 || i == 9 || j == 0 || j == 9) {
-          bgColor = SET_BG_COLOR_LIGHT_GREY;
-          character = posChar(color, i, j);
-        } else if (i % 2 == 1 && j % 2 == 1) {
-          bgColor = SET_BG_COLOR_WHITE;
-        } else if (i % 2 == 0 && j % 2 == 0) {
-          bgColor = SET_BG_COLOR_WHITE;
-        }
-        if (i != 0 && i != 9 && j != 0 && j != 9) {
-          character = piecesOnBoard(i, j, color);
-        }
-
-        string = string + bgColor + character;
-      }
-      string = string + SET_BG_COLOR_BLACK + "\n";
-    }
-
-    return string;
-  }
-
-  private String posChar(ChessGame.TeamColor color, int i, int j) {
-    String character = EMPTY;
-    if (color == BLACK) {
-      if ((j == 0 || j == 9) && i != 0 && i != 9) {
-        character = SET_TEXT_COLOR_BLACK + " " + i + " ";
-      }
-      if ((i == 0 || i == 9) && j != 0 && j != 9) {
-        character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + 9 - j) + " ";
-      }
-    } else if (color == WHITE) {
-      if ((j == 0 || j == 9) && i != 0 && i != 9) {
-        character = SET_TEXT_COLOR_BLACK + " " + (9 - i) + " ";
-      }
-      if ((i == 0 || i == 9) && j != 0 && j != 9) {
-        character = SET_TEXT_COLOR_BLACK + " " + Character.toString((char) 96 + j) + " ";
-      }
-    }
-
-    return character;
-  }
-
-  private String piecesOnBoard(int i, int j, ChessGame.TeamColor color) {
-    String txtColor = "";
-    String character = "";
-    int dif = 0;
-    if (color == WHITE) {
-      dif = 9;
-    }
-    if (i != 0 && i != 9 && j != 0 && j != 9) {
-      ChessPiece piece = board.getPiece(new ChessPosition(abs(dif - i), abs(j - dif)));
-      if (piece != null) {
-        if (piece.getTeamColor() == WHITE) {
-          txtColor = SET_TEXT_COLOR_LIGHT_GREY;
-        } else if (piece.getTeamColor() == BLACK) {
-          txtColor = SET_TEXT_COLOR_BLUE;
-        }
-
-        PieceCharacter pieceChar = PieceCharacter.valueOf(piece.getPieceType().name());
-        character = pieceChar.getCharacter(piece.getTeamColor());
-      } else {
-        txtColor = SET_TEXT_COLOR_BLACK;
-        character = EMPTY;
-      }
-    }
-    return txtColor + character;
-  }
-
-  enum PieceCharacter {
-    PAWN(WHITE_PAWN, BLACK_PAWN),
-    ROOK(WHITE_ROOK, BLACK_ROOK),
-    KNIGHT(WHITE_KNIGHT, BLACK_KNIGHT),
-    BISHOP(WHITE_BISHOP, BLACK_BISHOP),
-    QUEEN(WHITE_QUEEN, BLACK_QUEEN),
-    KING(WHITE_KING, BLACK_KING);
-
-    private final String whiteCharacter;
-    private final String blackCharacter;
-
-    PieceCharacter(String whiteCharacter, String blackCharacter) {
-      this.whiteCharacter = whiteCharacter;
-      this.blackCharacter = blackCharacter;
-    }
-
-    public String getCharacter(ChessGame.TeamColor color) {
-      if (color == WHITE) {
-        return whiteCharacter;
-      } else {
-        return blackCharacter;
-      }
-    }
   }
 
   public String help() {

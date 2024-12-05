@@ -45,13 +45,13 @@ public class ConnectionManager {
       }
     } else {
       for (var c : connections.values()) {
-        //if (c.session.isOpen()) {
-        if (c.visitorName.equals(excludeVisitorName)) {
-          c.send(serializer.toJson(notification));
-        }
-        /*} else {
+        if (c.session.isOpen()) {
+          if (c.visitorName.equals(excludeVisitorName)) {
+            c.send(serializer.toJson(notification));
+          }
+        } else {
           removeList.add(c);
-        }*/
+        }
       }
     }
 

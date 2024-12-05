@@ -283,12 +283,13 @@ public class ChessClient {
               SET_TEXT_COLOR_LIGHT_GREY + "- the chess board\n" +
               SET_TEXT_COLOR_BLUE + "leave " +
               SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
-              SET_TEXT_COLOR_BLUE + "move {move} " +
-              SET_TEXT_COLOR_LIGHT_GREY + "- a chess piece\n" +
+              SET_TEXT_COLOR_BLUE + "move <column><row> <column><row> <promotion type> " +
+              SET_TEXT_COLOR_LIGHT_GREY + "- a chess piece. Columns are letters and rows are numbers. Promotion type is optional. " +
+              "Types are: 'queen', 'bishop', 'knight', or 'rook'.\n" +
               SET_TEXT_COLOR_BLUE + "resign " +
               SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
-              SET_TEXT_COLOR_BLUE + "highlight <position>" +
-              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves\n" +
+              SET_TEXT_COLOR_BLUE + "highlight <column><row>" +
+              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves. Columns are letters and rows are numbers.\n" +
               SET_TEXT_COLOR_BLUE + "help " +
               SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     } else if (state == State.OBSERVING) {
@@ -296,8 +297,8 @@ public class ChessClient {
               SET_TEXT_COLOR_LIGHT_GREY + "- the chess board\n" +
               SET_TEXT_COLOR_BLUE + "leave " +
               SET_TEXT_COLOR_LIGHT_GREY + "- the game\n" +
-              SET_TEXT_COLOR_BLUE + "highlight <position>" +
-              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves\n" +
+              SET_TEXT_COLOR_BLUE + "highlight <column><row>" +
+              SET_TEXT_COLOR_LIGHT_GREY + "- legal moves. Columns are letters and rows are numbers.\n" +
               SET_TEXT_COLOR_BLUE + "help " +
               SET_TEXT_COLOR_LIGHT_GREY + "- with possible commands\n";
     }

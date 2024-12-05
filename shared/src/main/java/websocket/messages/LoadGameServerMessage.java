@@ -17,7 +17,7 @@ public class LoadGameServerMessage extends ServerMessage {
   }
 
   public String getMessage() {
-    return game.getBoard().getBoardString(userColor);
+    return game.getBoard().getBoardString(userColor, null, null);
   }
 
   public ChessGame getGame() {

@@ -94,6 +94,8 @@ public class WebSocketHandler {
     ChessGame.TeamColor oppColor = NONE;
     String myName = "";
     String oppName = "";
+    String whiteName = gameAccess.getGameI(id).whiteUsername();
+    String blackName = gameAccess.getGameI(id).blackUsername();
     if (Objects.equals(username, gameAccess.getGameI(id).whiteUsername())) {
       color = WHITE;
       oppColor = BLACK;
@@ -134,9 +136,13 @@ public class WebSocketHandler {
 
     //tell the people what happened
     var notification1 = new LoadGameServerMessage(game.game(), WHITE);
-    connections.broadcastSpecific(authAccess.getAuth(oppName).authToken(), notification1, game.gameID());
+    if (!isNull(authAccess.getAuth(blackName))) {
+      connections.broadcastSpecific(authAccess.getAuth(blackName).authToken(), notification1, game.gameID());
+    } else {
+      connections.broadcastAll(notification1, game.gameID());
+    }
     var notification11 = new LoadGameServerMessage(game.game(), BLACK);
-    connections.broadcastSelf(authAccess.getAuth(oppName).authToken(), notification11, game.gameID());
+    connections.broadcastSelf(authAccess.getAuth(blackName).authToken(), notification11, game.gameID());
 
     String movePretty = game.game().getBoard().getPiece(move.getEndPosition()).getPieceType().toString().toLowerCase()
             + " from " + move.getStartPosition().prettyToString() + " to " + move.getEndPosition().prettyToString();

@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 import static chess.ChessGame.TeamColor.*;
 import static chess.ChessPiece.PieceType.*;
@@ -135,7 +134,7 @@ public class ChessBoard {
   }
 
 
-  public String getBoardString(ChessGame.TeamColor color) {
+  public String getBoardString(ChessGame.TeamColor color, ChessPosition selectedPosition, Collection<ChessMove> validMoves) {
     if (color == NONE) {
       color = WHITE;
     }
@@ -143,6 +142,18 @@ public class ChessBoard {
     String bgColor;
     String character;
     String txtColor;
+
+    Set<ChessPosition> highlightedPositions = new HashSet<>();
+    if (selectedPosition != null) {
+      ChessPiece selectedPiece = this.getPiece(selectedPosition);
+      if (selectedPiece != null) {
+        highlightedPositions.add(selectedPosition);
+        for (ChessMove move : validMoves) {
+          highlightedPositions.add(move.getEndPosition());
+        }
+      }
+    }
+
     for (int i = 0; i < 10; ++i) {
       for (int j = 0; j < 10; ++j) {
         bgColor = SET_BG_COLOR_BLACK;
@@ -157,7 +168,21 @@ public class ChessBoard {
         } else if (i % 2 == 0 && j % 2 == 0) {
           bgColor = SET_BG_COLOR_WHITE;
         }
+
         if (i != 0 && i != 9 && j != 0 && j != 9) {
+          int boardRow = color == WHITE ? 9 - i : i;
+          int boardCol = color == WHITE ? j : 9 - j;
+          ChessPosition currentPos = new ChessPosition(boardRow, boardCol);
+
+          // Highlight possible moves
+          if (highlightedPositions.contains(currentPos)) {
+            if (bgColor.equals(SET_BG_COLOR_WHITE)) {
+              bgColor = SET_BG_COLOR_GREEN; // Regular green for white squares
+            } else {
+              bgColor = SET_BG_COLOR_DARK_GREEN; // Dark green for black squares
+            }
+          }
+
           character = piecesOnBoard(i, j, color);
         }
 

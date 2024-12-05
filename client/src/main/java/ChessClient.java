@@ -1,4 +1,8 @@
 import chess.*;
+import dataaccess.AuthDataAccess;
+import dataaccess.AuthDatabaseAccess;
+import dataaccess.GameDataAccess;
+import dataaccess.GameDatabaseAccess;
 import facade.NotificationHandler;
 import facade.WebSocketFacade;
 import model.*;
@@ -25,6 +29,8 @@ public class ChessClient {
   private static ChessBoard board = new ChessBoard();
   private Map<Integer, Integer> gameMap = new HashMap<>();
   private int currGameId;
+  private final GameDataAccess gameAccess = new GameDatabaseAccess();
+  private final AuthDataAccess authAccess = new AuthDatabaseAccess();
 
   public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
     this.notificationHandler = notificationHandler;
@@ -223,10 +229,20 @@ public class ChessClient {
     if ((params.length == 1) && params[0].length() == 2 &&  // Ensure positions is exactly two characters
             params[0].charAt(0) >= 'a' && params[0].charAt(0) <= 'h' &&
             params[0].charAt(1) >= '1' && params[0].charAt(1) <= '8') {
-      ws = new WebSocketFacade(serverUrl, notificationHandler);
-      ws.highlight(myAuth.authToken(), currGameId);
+      GameData game = gameAccess.getGameI(currGameId);
+      String username = authAccess.getAuthT(myAuth.authToken()).username();
+      ChessPosition piecePos = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - 'a' + 1);
+      ChessGame.TeamColor color = NONE;
+      if (Objects.equals(username, gameAccess.getGameI(currGameId).whiteUsername())) {
+        color = WHITE;
+      } else if (Objects.equals(username, gameAccess.getGameI(currGameId).blackUsername())) {
+        color = BLACK;
+      }
+      System.out.println(game.game().getBoard().getBoardString(color, piecePos, game.game().validMoves(piecePos)));
+      //ws = new WebSocketFacade(serverUrl, notificationHandler);
+      //ws.highlight(myAuth.authToken(), currGameId);
     } else {
-      throw new ResponseException(400, "Expected <column><row>");
+      throw new ResponseException(400, "Expected <column><row>. Ensure your columns and rows are correct.");
     }
 
     return "";

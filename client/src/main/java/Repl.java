@@ -4,14 +4,15 @@ import java.util.Scanner;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import facade.NotificationHandler;
-import ui.EscapeSequences.*;
+//import ui.EscapeSequences.*;
 import websocket.messages.ErrorServerMessage;
 import websocket.messages.LoadGameServerMessage;
 import websocket.messages.NotificationServerMessage;
 import websocket.messages.ServerMessage;
 
 import static chess.ChessGame.TeamColor.*;
-import static ui.EscapeSequences.*;
+import static chess.EscapeSequences.*;
+//import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
   private final ChessClient client;

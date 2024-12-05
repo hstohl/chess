@@ -8,10 +8,11 @@ import facade.ServerFacade;
 import java.util.*;
 
 import static chess.ChessGame.TeamColor.*;
+import static chess.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static chess.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
 import static java.util.Objects.isNull;
-import static ui.EscapeSequences.*;
 
 public class ChessClient {
   private WebSocketFacade ws;

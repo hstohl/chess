@@ -204,8 +204,8 @@ public class ChessClient {
       ws.makeChessMove(myAuth.authToken(), currGameId, move);
 
     } else {
-      throw new ResponseException(400, "Expected <column><row> <column><row>. Ensure your columns and rows are correct. " +
-              "If you are promoting, ensure you entered a promotion piece.");
+      throw new ResponseException(400, "Expected <column><row> <column><row> <promotion type>. Ensure your columns and rows are correct. " +
+              "Promotion type is optional. If you are promoting, ensure you entered a promotion piece.");
     }
 
     return "";
@@ -220,9 +220,15 @@ public class ChessClient {
 
   public String highlight(String... params) throws ResponseException {
     assertJoined();
-    int id = 0;
-    //ws = new WebSocketFacade(serverUrl, notificationHandler);
-    //ws.highlight(myAuth.authToken(), id);
+    if ((params.length == 1) && params[0].length() == 2 &&  // Ensure positions is exactly two characters
+            params[0].charAt(0) >= 'a' && params[0].charAt(0) <= 'h' &&
+            params[0].charAt(1) >= '1' && params[0].charAt(1) <= '8') {
+      ws = new WebSocketFacade(serverUrl, notificationHandler);
+      ws.highlight(myAuth.authToken(), currGameId);
+    } else {
+      throw new ResponseException(400, "Expected <column><row>");
+    }
+
     return "";
   }
 

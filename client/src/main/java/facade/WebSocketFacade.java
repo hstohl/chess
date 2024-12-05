@@ -113,4 +113,8 @@ public class WebSocketFacade extends Endpoint {
     }
   }
 
+  public void highlight(String authToken, int gameID) throws ResponseException {
+
+  }
+
 }
